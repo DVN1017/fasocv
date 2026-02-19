@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 // ─── COULEURS DU DRAPEAU DU BURKINA FASO ─────────────────────────────────────
 const BF = {
@@ -14,7 +14,6 @@ const BF = {
   sombre: "#0f1e0a",
 };
 
-// ─── ÉTAT INITIAL ─────────────────────────────────────────────────────────────
 const EMPTY_CV = {
   personal: { name: "", title: "", phone: "", email: "", location: "", website: "", photo: null },
   summary: "",
@@ -53,7 +52,6 @@ const STEPS = [
 
 const LANG_LEVELS = ["Langue maternelle", "Courant", "Avancé", "Intermédiaire", "Débutant"];
 
-// ─── ICÔNES SVG ───────────────────────────────────────────────────────────────
 const Icon = ({ path, size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d={path} />
@@ -64,9 +62,9 @@ const icons = {
   trash: "M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2",
   download: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3",
   camera: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+  spinner: "M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83",
 };
 
-// ─── COMPOSANTS RÉUTILISABLES ─────────────────────────────────────────────────
 const baseInput = { width: "100%", padding: "9px 12px", border: "1.5px solid #e5e7eb", borderRadius: 8, fontSize: 13, color: "#111827", outline: "none", boxSizing: "border-box", background: "white", transition: "border-color 0.2s", fontFamily: "inherit" };
 
 function Input({ label, value, onChange, placeholder, type = "text" }) {
@@ -103,7 +101,6 @@ function Select({ label, value, onChange, options }) {
   );
 }
 
-// ─── UPLOAD DE PHOTO ──────────────────────────────────────────────────────────
 function PhotoUpload({ photo, onChange }) {
   const fileRef = useRef();
   const handleFile = (e) => {
@@ -145,7 +142,6 @@ function PhotoUpload({ photo, onChange }) {
   );
 }
 
-// ─── ÉTAPES DU FORMULAIRE ─────────────────────────────────────────────────────
 function StepPersonnel({ cv, update }) {
   const p = cv.personal;
   const upd = (k, v) => update("personal", { ...p, [k]: v });
@@ -174,7 +170,7 @@ function StepResume({ cv, update }) {
       <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 16, lineHeight: 1.7, background: BF.jauneLight, padding: "10px 14px", borderRadius: 8, borderLeft: `4px solid ${BF.jaune}` }}>
         💡 Rédigez un résumé de 2 à 4 phrases présentant votre profil professionnel, vos points forts et vos objectifs.
       </p>
-      <Textarea value={cv.summary} onChange={v => update("summary", v)} placeholder="Ingénieur logiciel expérimenté avec plus de 7 ans d'expérience dans le développement d'applications web évolutives..." rows={6} />
+      <Textarea value={cv.summary} onChange={v => update("summary", v)} placeholder="Ingénieur logiciel expérimenté avec plus de 7 ans d'expérience..." rows={6} />
     </div>
   );
 }
@@ -283,7 +279,7 @@ function StepLangues({ cv, update }) {
   );
 }
 
-// ─── TEMPLATE MODERNE (Bicolore Rouge / Vert) ─────────────────────────────────
+// ─── TEMPLATES CV ─────────────────────────────────────────────────────────────
 function TemplateModerne({ cv }) {
   const { personal, summary, experience, education, skills, languages } = cv;
   const TitleSection = ({ title, color }) => (
@@ -291,7 +287,6 @@ function TemplateModerne({ cv }) {
   );
   return (
     <div style={{ fontFamily: "'Georgia', serif", width: "210mm", maxWidth: "100%", background: "white", minHeight: "297mm" }}>
-      {/* EN-TÊTE ROUGE */}
       <div style={{ background: `linear-gradient(135deg, ${BF.rouge} 0%, ${BF.rougeFonce} 100%)`, padding: "30px 36px 26px", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", right: -10, top: -10, fontSize: 180, color: "rgba(255,255,255,0.05)", lineHeight: 1, userSelect: "none" }}>★</div>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 5, background: BF.vert }} />
@@ -311,9 +306,7 @@ function TemplateModerne({ cv }) {
           </div>
         </div>
       </div>
-
       <div style={{ display: "grid", gridTemplateColumns: "175px 1fr", minHeight: "calc(297mm - 128px)" }}>
-        {/* COLONNE GAUCHE VERTE */}
         <div style={{ background: "#f0faf4", padding: "22px 16px", borderRight: `3px solid ${BF.vert}22` }}>
           {skills.filter(s => s).length > 0 && (
             <div style={{ marginBottom: 22 }}>
@@ -335,8 +328,6 @@ function TemplateModerne({ cv }) {
             </div>
           )}
         </div>
-
-        {/* COLONNE DROITE */}
         <div style={{ padding: "22px 26px" }}>
           {summary && (
             <div style={{ marginBottom: 20 }}>
@@ -380,7 +371,6 @@ function TemplateModerne({ cv }) {
   );
 }
 
-// ─── TEMPLATE ÉPURÉ ───────────────────────────────────────────────────────────
 function TemplateEpure({ cv }) {
   const { personal, summary, experience, education, skills, languages } = cv;
   const S = ({ title, color = BF.rouge }) => (
@@ -388,9 +378,7 @@ function TemplateEpure({ cv }) {
   );
   return (
     <div style={{ fontFamily: "system-ui, -apple-system, sans-serif", width: "210mm", maxWidth: "100%", background: "white", padding: "42px 46px", minHeight: "297mm" }}>
-      {/* BANNIÈRE TRICOLORE */}
       <div style={{ height: 5, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, borderRadius: 3, marginBottom: 24 }} />
-
       <div style={{ display: "flex", gap: 22, alignItems: "flex-start", marginBottom: 22, paddingBottom: 20, borderBottom: `2px solid ${BF.rouge}` }}>
         {personal.photo && (
           <img src={personal.photo} alt="Photo" style={{ width: 88, height: 88, borderRadius: "50%", objectFit: "cover", border: `3px solid ${BF.vert}`, flexShrink: 0 }} />
@@ -406,13 +394,11 @@ function TemplateEpure({ cv }) {
           </div>
         </div>
       </div>
-
       {summary && (
         <div style={{ marginBottom: 20, padding: "12px 14px", background: BF.vertLight, borderLeft: `4px solid ${BF.vert}`, borderRadius: "0 8px 8px 0" }}>
           <p style={{ fontSize: 12, color: "#374151", lineHeight: 1.8, margin: 0, fontStyle: "italic" }}>{summary}</p>
         </div>
       )}
-
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 28 }}>
         <div>
           {experience.filter(e => e.company || e.role).length > 0 && (
@@ -478,9 +464,7 @@ function TemplateEpure({ cv }) {
 function Accueil({ onStart }) {
   return (
     <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, ${BF.vertFonce} 100%)`, display: "flex", flexDirection: "column" }}>
-      {/* Bande tricolore en haut */}
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
-
       <nav style={{ padding: "16px 32px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{ display: "flex", width: 36, height: 36, borderRadius: 8, overflow: "hidden", border: "2px solid rgba(255,255,255,0.15)", flexShrink: 0 }}>
@@ -489,30 +473,24 @@ function Accueil({ onStart }) {
           </div>
           <span style={{ color: "white", fontWeight: 900, fontSize: 22, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
-        <button onClick={onStart} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+        <button onClick={() => onStart(false)} style={{ padding: "8px 20px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
           Commencer →
         </button>
       </nav>
-
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "50px 24px", textAlign: "center" }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 18px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 100, marginBottom: 26 }}>
           <span style={{ fontSize: 18 }}>🇧🇫</span>
           <span style={{ fontSize: 11, color: BF.jaune, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>Créateur de CV — Burkina Faso</span>
         </div>
-
         <h1 style={{ fontSize: "clamp(32px, 5.5vw, 60px)", fontWeight: 900, color: "white", letterSpacing: "-2px", lineHeight: 1.1, margin: "0 0 18px", maxWidth: 680 }}>
-          Créez votre CV<br />
-          <span style={{ color: BF.jaune }}>professionnel</span> en quelques minutes
+          Créez votre CV<br /><span style={{ color: BF.jaune }}>professionnel</span> en quelques minutes
         </h1>
         <p style={{ fontSize: "clamp(13px, 1.8vw, 17px)", color: "rgba(255,255,255,0.6)", maxWidth: 500, lineHeight: 1.8, margin: "0 0 40px" }}>
           Plateforme gratuite, simple et élégante pour créer, personnaliser et télécharger votre CV en PDF — sans inscription.
         </p>
-
         <div style={{ display: "flex", gap: 14, flexWrap: "wrap", justifyContent: "center" }}>
           <button onClick={() => onStart(false)}
-            style={{ padding: "15px 36px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 16px 36px ${BF.rouge}55`, transition: "transform 0.2s" }}
-            onMouseEnter={e => e.target.style.transform = "translateY(-2px)"}
-            onMouseLeave={e => e.target.style.transform = "translateY(0)"}>
+            style={{ padding: "15px 36px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 16px 36px ${BF.rouge}55` }}>
             Créer mon CV →
           </button>
           <button onClick={() => onStart(true)}
@@ -520,7 +498,6 @@ function Accueil({ onStart }) {
             Voir la démo
           </button>
         </div>
-
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(165px, 1fr))", gap: 12, marginTop: 64, maxWidth: 700, width: "100%" }}>
           {[
             { icon: "⚡", label: "Rapide", desc: "Prêt en moins de 5 min" },
@@ -536,11 +513,9 @@ function Accueil({ onStart }) {
           ))}
         </div>
       </div>
-
       <div style={{ textAlign: "center", padding: "18px", color: "rgba(255,255,255,0.28)", fontSize: 12 }}>
-        © 2024 FasoCV • Fait avec ❤️ pour le Burkina Faso 🇧🇫
+        © 2025 FasoCV • Fait avec ❤️ pour le Burkina Faso 🇧🇫
       </div>
-      {/* Bande tricolore en bas */}
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
     </div>
   );
@@ -553,6 +528,7 @@ export default function FasoCV() {
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState("moderne");
   const [showPreviewMobile, setShowPreviewMobile] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const previewRef = useRef(null);
 
   const update = useCallback((key, value) => setCv(prev => ({ ...prev, [key]: value })), []);
@@ -563,36 +539,74 @@ export default function FasoCV() {
     setScreen("builder");
   };
 
-  const handleExportPDF = () => {
-    const style = document.createElement("style");
-    style.textContent = `@media print { body * { visibility: hidden !important; } #cv-print-target, #cv-print-target * { visibility: visible !important; } #cv-print-target { position: fixed !important; left: 0 !important; top: 0 !important; width: 210mm !important; transform: none !important; box-shadow: none !important; } }`;
-    document.head.appendChild(style);
-    window.print();
-    document.head.removeChild(style);
+  // ── EXPORT PDF DIRECT (sans boîte d'impression) ────────────────────────────
+  const handleExportPDF = async () => {
+    if (exporting) return;
+    setExporting(true);
+    try {
+      const html2pdf = (await import("html2pdf.js")).default;
+      const element = previewRef.current;
+      const nomFichier = cv.personal.name
+        ? `CV_${cv.personal.name.replace(/\s+/g, "_")}.pdf`
+        : "MonCV_FasoCV.pdf";
+      const options = {
+        margin: 0,
+        filename: nomFichier,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      };
+      // On retire temporairement le transform de scale pour l'export
+      const prevTransform = element.style.transform;
+      const prevMargin = element.style.marginBottom;
+      element.style.transform = "none";
+      element.style.marginBottom = "0";
+      await html2pdf().set(options).from(element).save();
+      element.style.transform = prevTransform;
+      element.style.marginBottom = prevMargin;
+    } catch (err) {
+      alert("Erreur lors de l'export PDF. Veuillez réessayer.");
+      console.error(err);
+    }
+    setExporting(false);
   };
 
   if (screen === "home") return <Accueil onStart={handleStart} />;
 
   const stepForms = [
-    <StepPersonnel cv={cv} update={update} />,
-    <StepResume cv={cv} update={update} />,
-    <StepExperience cv={cv} update={update} />,
-    <StepFormation cv={cv} update={update} />,
-    <StepCompetences cv={cv} update={update} />,
-    <StepLangues cv={cv} update={update} />,
+    <StepPersonnel key="p" cv={cv} update={update} />,
+    <StepResume key="r" cv={cv} update={update} />,
+    <StepExperience key="e" cv={cv} update={update} />,
+    <StepFormation key="f" cv={cv} update={update} />,
+    <StepCompetences key="c" cv={cv} update={update} />,
+    <StepLangues key="l" cv={cv} update={update} />,
   ];
 
   const CVTemplate = template === "moderne" ? TemplateModerne : TemplateEpure;
 
+  const BtnPDF = ({ small = false }) => (
+    <button
+      onClick={handleExportPDF}
+      disabled={exporting}
+      style={{
+        display: "flex", alignItems: "center", gap: 6,
+        padding: small ? "7px 16px" : "9px 20px",
+        background: exporting ? "#9ca3af" : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`,
+        border: "none", borderRadius: 8, color: "white", cursor: exporting ? "not-allowed" : "pointer",
+        fontSize: small ? 12 : 13, fontWeight: 700,
+        boxShadow: exporting ? "none" : `0 3px 10px ${BF.rouge}44`,
+        transition: "all 0.2s",
+      }}>
+      <Icon path={exporting ? icons.spinner : icons.download} size={small ? 13 : 14} />
+      {exporting ? "Génération..." : "Télécharger PDF"}
+    </button>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: "#f1f5f9", display: "flex", flexDirection: "column" }}>
-      <style>{`
-        @media print { #cv-print-target { display: block !important; } body > * { display: none !important; } body > #cv-print-target { display: block !important; } }
-        * { box-sizing: border-box; }
-        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-      `}</style>
+      <style>{`* { box-sizing: border-box; } ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }`}</style>
 
-      {/* Bande tricolore en haut */}
+      {/* Bande tricolore */}
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
 
       {/* En-tête */}
@@ -604,11 +618,10 @@ export default function FasoCV() {
           </div>
           <span style={{ fontWeight: 900, fontSize: 17, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
         </button>
-
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 8, padding: 2, gap: 2 }}>
             {[{ key: "moderne", label: "Moderne" }, { key: "epure", label: "Épuré" }].map(t => (
-              <button key={t.key} onClick={() => setTemplate(t.key)} style={{ padding: "5px 12px", fontSize: 11, fontWeight: 700, borderRadius: 6, border: "none", cursor: "pointer", background: template === t.key ? "white" : "transparent", color: template === t.key ? BF.rouge : "#6b7280", boxShadow: template === t.key ? "0 1px 3px rgba(0,0,0,0.1)" : "none", transition: "all 0.15s" }}>
+              <button key={t.key} onClick={() => setTemplate(t.key)} style={{ padding: "5px 12px", fontSize: 11, fontWeight: 700, borderRadius: 6, border: "none", cursor: "pointer", background: template === t.key ? "white" : "transparent", color: template === t.key ? BF.rouge : "#6b7280", boxShadow: template === t.key ? "0 1px 3px rgba(0,0,0,0.1)" : "none" }}>
                 {t.label}
               </button>
             ))}
@@ -616,25 +629,23 @@ export default function FasoCV() {
           <button onClick={() => setShowPreviewMobile(!showPreviewMobile)} style={{ padding: "5px 12px", background: "#f3f4f6", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 11, fontWeight: 600, color: "#374151" }}>
             {showPreviewMobile ? "← Formulaire" : "Aperçu →"}
           </button>
-          <button onClick={handleExportPDF} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 16px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 12, fontWeight: 700, boxShadow: `0 3px 10px ${BF.rouge}44` }}>
-            <Icon path={icons.download} size={13} /> Télécharger PDF
-          </button>
+          <BtnPDF small />
         </div>
       </header>
 
-      {/* Grille principale */}
+      {/* Grille */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", flex: 1, overflow: "hidden", height: "calc(100vh - 58px)" }}>
+
         {/* Formulaire */}
         <div style={{ display: showPreviewMobile ? "none" : "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb", overflowY: "auto", height: "100%" }}>
-          {/* Barre de progression */}
           <div style={{ padding: "12px 20px 0", background: "white", borderBottom: "1px solid #f3f4f6", flexShrink: 0 }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
               {STEPS.map((s, i) => (
                 <button key={s.id} onClick={() => setStep(i)} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", flex: 1 }}>
-                  <div style={{ width: 26, height: 26, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: i === step ? BF.rouge : i < step ? BF.vertLight : "#f3f4f6", color: i === step ? "white" : i < step ? BF.vert : "#9ca3af", fontSize: 10.5, fontWeight: 800, border: `2px solid ${i === step ? BF.rouge : i < step ? BF.vert : "transparent"}`, transition: "all 0.2s" }}>
+                  <div style={{ width: 26, height: 26, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", background: i === step ? BF.rouge : i < step ? BF.vertLight : "#f3f4f6", color: i === step ? "white" : i < step ? BF.vert : "#9ca3af", fontSize: 10.5, fontWeight: 800, border: `2px solid ${i === step ? BF.rouge : i < step ? BF.vert : "transparent"}` }}>
                     {i < step ? "✓" : i + 1}
                   </div>
-                  <span style={{ fontSize: 8, fontWeight: 700, color: i === step ? BF.rouge : "#9ca3af", textTransform: "uppercase", letterSpacing: "0.3px" }}>{s.label}</span>
+                  <span style={{ fontSize: 8, fontWeight: 700, color: i === step ? BF.rouge : "#9ca3af", textTransform: "uppercase" }}>{s.label}</span>
                 </button>
               ))}
             </div>
@@ -642,15 +653,11 @@ export default function FasoCV() {
               <div style={{ height: "100%", background: `linear-gradient(90deg, ${BF.rouge}, ${BF.jaune} 50%, ${BF.vert})`, borderRadius: 2, width: `${((step + 1) / STEPS.length) * 100}%`, transition: "width 0.4s ease" }} />
             </div>
           </div>
-
-          {/* Contenu */}
           <div style={{ padding: "20px", flex: 1, overflowY: "auto" }}>
             <h2 style={{ fontSize: 16, fontWeight: 900, color: "#0f172a", margin: "0 0 2px" }}>{STEPS[step].label}</h2>
             <p style={{ fontSize: 11, color: "#94a3b8", margin: "0 0 16px" }}>Étape {step + 1} sur {STEPS.length}</p>
             {stepForms[step]}
           </div>
-
-          {/* Navigation */}
           <div style={{ padding: "12px 20px", borderTop: "1px solid #f3f4f6", background: "white", display: "flex", justifyContent: "space-between", gap: 10, flexShrink: 0 }}>
             <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
               style={{ padding: "9px 18px", border: "1.5px solid #e5e7eb", borderRadius: 8, background: "white", color: "#374151", cursor: step === 0 ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 600, opacity: step === 0 ? 0.35 : 1 }}>
@@ -658,25 +665,27 @@ export default function FasoCV() {
             </button>
             {step < STEPS.length - 1
               ? <button onClick={() => setStep(s => s + 1)} style={{ padding: "9px 22px", border: "none", borderRadius: 8, background: `linear-gradient(135deg, ${BF.vert}, ${BF.vertFonce})`, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>Suivant →</button>
-              : <button onClick={handleExportPDF} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 20px", border: "none", borderRadius: 8, background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
-                  <Icon path={icons.download} size={14} /> Télécharger PDF
-                </button>
+              : <BtnPDF />
             }
           </div>
         </div>
 
-        {/* Aperçu */}
+        {/* ── APERÇU ── taille réduite avec scale(0.52) ── */}
         <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", height: "100%", background: "#dde3ea" }}>
           <div style={{ padding: "9px 16px", background: "white", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
             <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "1px", textTransform: "uppercase" }}>Aperçu en direct</span>
             <span style={{ fontSize: 10, color: "#9ca3af", background: "#f3f4f6", padding: "2px 8px", borderRadius: 4 }}>Format A4</span>
           </div>
-          <div style={{ flex: 1, overflow: "auto", padding: "18px 10px", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
-            <div id="cv-print-target" ref={previewRef} style={{ transform: "scale(0.68)", transformOrigin: "top center", boxShadow: "0 20px 60px rgba(0,0,0,0.28)", borderRadius: 2, marginBottom: -180 }}>
-              <CVTemplate cv={cv} />
+          <div style={{ flex: 1, overflow: "hidden", padding: "16px 10px", display: "flex", justifyContent: "center", alignItems: "flex-start" }}>
+            {/* ✅ CORRECTION : scale réduit à 0.48 pour que le CV rentre bien */}
+            <div style={{ transform: "scale(0.48)", transformOrigin: "top center", width: "210mm", flexShrink: 0 }}>
+              <div ref={previewRef} style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)", borderRadius: 2 }}>
+                <CVTemplate cv={cv} />
+              </div>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   );
