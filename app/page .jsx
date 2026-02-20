@@ -65,6 +65,40 @@ const icons = {
   back: "M19 12H5M12 5l-7 7 7 7",
 };
 
+// ─── LOGO DRAPEAU BURKINA FASO ────────────────────────────────────────────────
+// 2 bandes horizontales : Rouge (haut) + Vert (bas) + Étoile jaune au centre
+function LogoBF({ size = 28 }) {
+  return (
+    <div style={{
+      position: "relative",
+      width: size,
+      height: size,
+      borderRadius: 6,
+      overflow: "hidden",
+      border: "1.5px solid rgba(0,0,0,0.12)",
+      flexShrink: 0,
+    }}>
+      {/* Bande rouge en haut */}
+      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "50%", background: BF.rouge }} />
+      {/* Bande verte en bas */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: BF.vert }} />
+      {/* Étoile jaune au centre */}
+      <div style={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        color: BF.jaune,
+        fontSize: size * 0.58,
+        lineHeight: 1,
+        fontWeight: 900,
+        textShadow: "0 0 2px rgba(0,0,0,0.3)",
+        userSelect: "none",
+      }}>★</div>
+    </div>
+  );
+}
+
 const baseInput = {
   width: "100%", padding: "9px 12px", border: "1.5px solid #e5e7eb",
   borderRadius: 8, fontSize: 13, color: "#111827", outline: "none",
@@ -285,7 +319,6 @@ function TemplateModerne({ cv }) {
   return (
     <div style={{ fontFamily: "'Georgia', serif", width: "210mm", background: "white", minHeight: "297mm" }}>
       <div style={{ background: `linear-gradient(135deg, ${BF.rouge} 0%, ${BF.rougeFonce} 100%)`, padding: "30px 36px 26px", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", right: -10, top: -10, fontSize: 180, color: "rgba(255,255,255,0.05)", lineHeight: 1, userSelect: "none" }}>★</div>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 5, background: BF.vert }} />
         <div style={{ display: "flex", gap: 20, alignItems: "center", position: "relative", zIndex: 1 }}>
           {personal.photo && <img src={personal.photo} alt="Photo" style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "3px solid rgba(255,255,255,0.35)", flexShrink: 0 }} />}
@@ -455,10 +488,8 @@ function Accueil({ onStart }) {
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
       <nav style={{ padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ display: "flex", width: 34, height: 34, borderRadius: 8, overflow: "hidden", border: "2px solid rgba(255,255,255,0.15)", flexShrink: 0 }}>
-            <div style={{ flex: 1, background: BF.rouge }} />
-            <div style={{ flex: 1, background: BF.vert }} />
-          </div>
+          {/* ✅ LOGO DRAPEAU BURKINA FASO — Rouge | Vert + étoile jaune */}
+          <LogoBF size={36} />
           <span style={{ color: "white", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
         <button onClick={() => onStart(false)} style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
@@ -513,13 +544,11 @@ export default function FasoCV() {
   const [cv, setCv] = useState(EMPTY_CV);
   const [step, setStep] = useState(0);
   const [template, setTemplate] = useState("moderne");
-  // ✅ Sur mobile, l'aperçu est CACHÉ par défaut
   const [showPreview, setShowPreview] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [exporting, setExporting] = useState(false);
   const previewRef = useRef(null);
 
-  // Détection mobile
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
     check();
@@ -572,10 +601,6 @@ export default function FasoCV() {
 
   const CVTemplate = template === "moderne" ? TemplateModerne : TemplateEpure;
 
-  // Sur mobile, on affiche soit le formulaire, soit l'aperçu — jamais les deux
-  const mobileShowForm = !showPreview;
-  const mobileShowApercu = showPreview;
-
   return (
     <div style={{ minHeight: "100vh", background: "#f1f5f9", display: "flex", flexDirection: "column" }}>
       <style>{`
@@ -584,21 +609,17 @@ export default function FasoCV() {
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
       `}</style>
 
-      {/* Bande tricolore */}
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
 
       {/* ── EN-TÊTE ── */}
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 52, display: "flex", alignItems: "center", justifyContent: "space-between", position: "sticky", top: 0, zIndex: 50, boxShadow: "0 1px 3px rgba(0,0,0,0.06)", flexShrink: 0 }}>
         <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
-          <div style={{ display: "flex", width: 24, height: 24, borderRadius: 5, overflow: "hidden", border: "1.5px solid #e5e7eb" }}>
-            <div style={{ flex: 1, background: BF.rouge }} />
-            <div style={{ flex: 1, background: BF.vert }} />
-          </div>
+          {/* ✅ LOGO DRAPEAU BURKINA FASO — Rouge | Vert + étoile jaune */}
+          <LogoBF size={28} />
           <span style={{ fontWeight: 900, fontSize: 16, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
         </button>
 
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {/* Modèles — caché sur petit mobile si aperçu visible */}
           {(!isMobile || !showPreview) && (
             <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 7, padding: 2, gap: 1 }}>
               {[{ key: "moderne", label: "Moderne" }, { key: "epure", label: "Épuré" }].map(t => (
@@ -608,16 +629,12 @@ export default function FasoCV() {
               ))}
             </div>
           )}
-
-          {/* Bouton Aperçu / Retour formulaire (mobile) */}
           {isMobile && (
             <button onClick={() => setShowPreview(!showPreview)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: showPreview ? BF.vertLight : "#f3f4f6", border: `1px solid ${showPreview ? BF.vert : "#e5e7eb"}`, borderRadius: 7, cursor: "pointer", fontSize: 10, fontWeight: 700, color: showPreview ? BF.vertFonce : "#374151" }}>
               <Icon path={showPreview ? icons.back : icons.eye} size={13} />
               {showPreview ? "Formulaire" : "Aperçu"}
             </button>
           )}
-
-          {/* Bouton PDF */}
           <button onClick={handleExportPDF} disabled={exporting} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: exporting ? "#9ca3af" : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 7, color: "white", cursor: exporting ? "not-allowed" : "pointer", fontSize: 11, fontWeight: 700 }}>
             <Icon path={icons.download} size={12} />
             {exporting ? "..." : isMobile ? "PDF" : "Télécharger PDF"}
@@ -627,13 +644,9 @@ export default function FasoCV() {
 
       {/* ── CORPS PRINCIPAL ── */}
       {isMobile ? (
-        // ════ VUE MOBILE : une seule colonne ════
         <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", height: "calc(100vh - 58px)" }}>
-
-          {/* FORMULAIRE MOBILE */}
-          {mobileShowForm && (
+          {!showPreview && (
             <div style={{ display: "flex", flexDirection: "column", flex: 1, overflowY: "auto" }}>
-              {/* Progression */}
               <div style={{ padding: "10px 14px 0", background: "white", borderBottom: "1px solid #f3f4f6", flexShrink: 0 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
                   {STEPS.map((s, i) => (
@@ -649,15 +662,11 @@ export default function FasoCV() {
                   <div style={{ height: "100%", background: `linear-gradient(90deg, ${BF.rouge}, ${BF.jaune} 50%, ${BF.vert})`, borderRadius: 2, width: `${((step + 1) / STEPS.length) * 100}%`, transition: "width 0.4s ease" }} />
                 </div>
               </div>
-
-              {/* Contenu */}
               <div style={{ padding: "16px 14px", flex: 1, overflowY: "auto" }}>
                 <h2 style={{ fontSize: 15, fontWeight: 900, color: "#0f172a", margin: "0 0 2px" }}>{STEPS[step].label}</h2>
                 <p style={{ fontSize: 10, color: "#94a3b8", margin: "0 0 14px" }}>Étape {step + 1} sur {STEPS.length}</p>
                 {stepForms[step]}
               </div>
-
-              {/* Navigation mobile */}
               <div style={{ padding: "10px 14px", borderTop: "1px solid #f3f4f6", background: "white", display: "flex", justifyContent: "space-between", gap: 8, flexShrink: 0 }}>
                 <button onClick={() => setStep(s => Math.max(0, s - 1))} disabled={step === 0}
                   style={{ flex: 1, padding: "9px", border: "1.5px solid #e5e7eb", borderRadius: 8, background: "white", color: "#374151", cursor: step === 0 ? "not-allowed" : "pointer", fontSize: 12, fontWeight: 600, opacity: step === 0 ? 0.35 : 1 }}>
@@ -670,9 +679,7 @@ export default function FasoCV() {
               </div>
             </div>
           )}
-
-          {/* APERÇU MOBILE — uniquement si bouton aperçu cliqué */}
-          {mobileShowApercu && (
+          {showPreview && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", overflowY: "auto", background: "#dde3ea" }}>
               <div style={{ padding: "8px 14px", background: "white", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
                 <span style={{ fontSize: 11, fontWeight: 700, color: "#374151" }}>APERÇU EN DIRECT</span>
@@ -685,7 +692,6 @@ export default function FasoCV() {
                   </div>
                 </div>
               </div>
-              {/* Bouton télécharger en bas sur mobile */}
               <div style={{ padding: "10px 14px", background: "white", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
                 <button onClick={handleExportPDF} disabled={exporting} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 10, color: "white", cursor: "pointer", fontSize: 14, fontWeight: 800 }}>
                   <Icon path={icons.download} size={16} />
@@ -696,10 +702,7 @@ export default function FasoCV() {
           )}
         </div>
       ) : (
-        // ════ VUE DESKTOP : deux colonnes ════
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", flex: 1, overflow: "hidden", height: "calc(100vh - 58px)" }}>
-
-          {/* Formulaire desktop */}
           <div style={{ display: "flex", flexDirection: "column", borderRight: "1px solid #e5e7eb", overflowY: "auto", height: "100%" }}>
             <div style={{ padding: "12px 20px 0", background: "white", borderBottom: "1px solid #f3f4f6", flexShrink: 0 }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
@@ -734,8 +737,6 @@ export default function FasoCV() {
               }
             </div>
           </div>
-
-          {/* Aperçu desktop — toujours visible */}
           <div style={{ display: "flex", flexDirection: "column", overflowY: "auto", height: "100%", background: "#dde3ea" }}>
             <div style={{ padding: "9px 16px", background: "white", borderBottom: "1px solid #e5e7eb", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
               <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "1px", textTransform: "uppercase" }}>Aperçu en direct</span>
@@ -749,7 +750,6 @@ export default function FasoCV() {
               </div>
             </div>
           </div>
-
         </div>
       )}
     </div>
