@@ -89,12 +89,14 @@ function ModalPremium({ onClose, raison }) {
         {/* Header */}
         <div style={{ background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, padding: "20px 24px", position: "relative" }}>
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
+          {/* Bouton fermer ✕ */}
+          <button onClick={onClose} style={{ position: "absolute", top: 12, right: 14, background: "rgba(255,255,255,0.2)", border: "none", borderRadius: "50%", width: 28, height: 28, cursor: "pointer", color: "white", fontSize: 16, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1 }}>✕</button>
           <div style={{ display: "flex", alignItems: "center", gap: 10, color: "white" }}>
             <span style={{ fontSize: 24 }}>⭐</span>
             <div>
               <div style={{ fontWeight: 900, fontSize: 16 }}>Passer en Premium</div>
               <div style={{ fontSize: 11, opacity: 0.8 }}>
-                {raison === "limite" ? "Vous avez atteint la limite gratuite" : "Fonctionnalité réservée aux membres Premium"}
+                {raison === "limite" ? "Vous avez atteint la limite gratuite" : "Débloquez toutes les fonctionnalités"}
               </div>
             </div>
           </div>
@@ -582,8 +584,8 @@ function Accueil({ onStart }) {
           <button onClick={() => onStart(false)} style={{ padding: "14px 32px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 14px 30px ${BF.rouge}55` }}>
             Créer mon CV →
           </button>
-          <button onClick={() => onStart(true)} style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
-            Voir la démo
+          <button onClick={() => { onStart(true); }} style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+            👁 Voir un exemple
           </button>
         </div>
         {/* Tableau comparatif gratuit vs premium */}
@@ -609,7 +611,7 @@ function Accueil({ onStart }) {
         </div>
       </div>
       <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.28)", fontSize: 11 }}>
-        © 2025 FasoCV • Fait avec ❤️ pour le Burkina Faso 🇧🇫
+        © 2025 FasoCV — Tous droits réservés • Fait avec ❤️ pour le Burkina Faso 🇧🇫
       </div>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
     </div>
@@ -648,7 +650,8 @@ export default function FasoCV() {
   const handleStart = (demo = false) => {
     setCv(demo ? DEMO_CV : EMPTY_CV);
     setStep(0);
-    setShowPreview(false);
+    // En mode démo : ouvrir directement l'aperçu du CV d'Aminata
+    setShowPreview(demo ? true : false);
     setScreen("builder");
   };
 
@@ -810,16 +813,16 @@ export default function FasoCV() {
         </div>
       </header>
 
-      {/* Bandeau info téléchargements */}
-      <div style={{ background: dlInfo.bg, borderBottom: `1px solid ${dlInfo.color}22`, padding: "5px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 11, color: dlInfo.color, fontWeight: 600 }}>📄 {dlInfo.msg}</span>
-        {nbTelechargements >= 1 && (
+      {/* Bandeau info téléchargements — caché au début */}
+      {nbTelechargements > 0 && (
+        <div style={{ background: dlInfo.bg, borderBottom: `1px solid ${dlInfo.color}22`, padding: "5px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <span style={{ fontSize: 11, color: dlInfo.color, fontWeight: 600 }}>📄 {dlInfo.msg}</span>
           <button onClick={() => { setRaisonModal("suggestion"); setShowModalPremium(true); }}
             style={{ fontSize: 10, fontWeight: 700, color: BF.rouge, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-            → Passer Premium
+            ⭐ Passer Premium
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
         {showPreview ? (
