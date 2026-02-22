@@ -550,66 +550,195 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
   );
 }
 
-// ─── PAGE D'ACCUEIL ───────────────────────────────────────────────────────────
-function Accueil({ onStart }) {
+// ─── PAGE PREMIUM ────────────────────────────────────────────────────────────
+function PagePremium({ onBack }) {
   return (
     <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, ${BF.vertFonce} 100%)`, display: "flex", flexDirection: "column" }}>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
+      <nav style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+        <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "7px 14px" }}>
+          ← Retour
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <LogoBF size={28} />
+          <span style={{ color: "white", fontWeight: 900, fontSize: 18 }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
+        </div>
+      </nav>
+
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "30px 20px" }}>
+        <h1 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 900, color: "white", textAlign: "center", margin: "0 0 8px" }}>
+          Passe en <span style={{ color: BF.jaune }}>Premium</span>
+        </h1>
+        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginBottom: 36, textAlign: "center" }}>
+          Téléchargements illimités, sans filigrane, 2 templates pro
+        </p>
+
+        {/* Avantages */}
+        <div style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, padding: "16px 20px", marginBottom: 30, maxWidth: 420, width: "100%" }}>
+          {[
+            "✅ 2 templates professionnels (Moderne + Épuré)",
+            "✅ Photo de profil sur ton CV",
+            "✅ PDF illimité sans filigrane",
+            "✅ Paiement sécurisé Wave & Orange Money",
+          ].map((item, i) => (
+            <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginBottom: i < 3 ? 10 : 0 }}>{item}</div>
+          ))}
+        </div>
+
+        {/* Offres */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 420, width: "100%" }}>
+          <a href={CHARIOW.sixMois} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+            <div style={{ background: "rgba(255,255,255,0.06)", border: `2px solid ${BF.vert}`, borderRadius: 14, padding: "20px 14px", textAlign: "center", cursor: "pointer" }}>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>6 Mois</div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: BF.vert }}>600 <span style={{ fontSize: 13 }}>FCFA</span></div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~100 FCFA/mois</div>
+              <div style={{ padding: "9px", background: BF.vert, borderRadius: 8, color: "white", fontSize: 13, fontWeight: 700 }}>Choisir →</div>
+            </div>
+          </a>
+          <a href={CHARIOW.unAn} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
+            <div style={{ background: "rgba(255,255,255,0.06)", border: `2px solid ${BF.jaune}`, borderRadius: 14, padding: "20px 14px", textAlign: "center", cursor: "pointer", position: "relative" }}>
+              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: BF.jaune, color: "#000", fontSize: 9, fontWeight: 800, padding: "3px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>MEILLEURE OFFRE</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>1 An</div>
+              <div style={{ fontSize: 28, fontWeight: 900, color: BF.jaune }}>1000 <span style={{ fontSize: 13 }}>FCFA</span></div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~83 FCFA/mois</div>
+              <div style={{ padding: "9px", background: BF.jaune, borderRadius: 8, color: "#000", fontSize: 13, fontWeight: 700 }}>Choisir →</div>
+            </div>
+          </a>
+        </div>
+
+        <button onClick={onBack} style={{ marginTop: 24, fontSize: 12, color: "rgba(255,255,255,0.35)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
+          Continuer en gratuit
+        </button>
+      </div>
+
+      <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.2)", fontSize: 11 }}>
+        © 2025 FasoCV — Tous droits réservés
+      </div>
+      <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
+    </div>
+  );
+}
+
+// ─── PAGE D'ACCUEIL ───────────────────────────────────────────────────────────
+function Accueil({ onStart, onPremium }) {
+  const [visible, setVisible] = useState(false);
+  const [ligne1, setLigne1] = useState(false);
+  const [ligne2, setLigne2] = useState(false);
+  const [ligne3, setLigne3] = useState(false);
+  const [boutons, setBoutons] = useState(false);
+  const [tableau, setTableau] = useState(false);
+
+  useEffect(() => {
+    // Apparition progressive des éléments
+    setTimeout(() => setVisible(true), 200);
+    setTimeout(() => setLigne1(true), 600);
+    setTimeout(() => setLigne2(true), 1200);
+    setTimeout(() => setLigne3(true), 1800);
+    setTimeout(() => setBoutons(true), 2400);
+    setTimeout(() => setTableau(true), 3000);
+  }, []);
+
+  const fadeIn = (show, extra = {}) => ({
+    opacity: show ? 1 : 0,
+    transform: show ? "translateY(0)" : "translateY(24px)",
+    transition: "opacity 0.8s ease, transform 0.8s ease",
+    ...extra,
+  });
+
+  return (
+    <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, ${BF.vertFonce} 100%)`, display: "flex", flexDirection: "column" }}>
+      <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
+
+      {/* NAV */}
       <nav style={{ padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <LogoBF size={36} />
           <span style={{ color: "white", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
-          <a href={CHARIOW.sixMois} target="_blank" rel="noopener noreferrer" style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 12, fontWeight: 700, textDecoration: "none" }}>
-            ⭐ Premium
-          </a>
-          <button onClick={() => onStart(false)} style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+          <button onClick={onPremium}
+            style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+            Passer Premium
+          </button>
+          <button onClick={() => onStart(false)}
+            style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
             Commencer →
           </button>
         </div>
       </nav>
+
+      {/* HERO */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", textAlign: "center" }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 100, marginBottom: 22 }}>
-          <span style={{ fontSize: 16 }}>🇧🇫</span>
-          <span style={{ fontSize: 10, color: BF.jaune, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase" }}>Créateur de CV — Burkina Faso</span>
+
+        {/* Salut ! */}
+        <div style={{ ...fadeIn(visible), display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 20 }}>
+          <span style={{ fontSize: "clamp(22px, 4vw, 32px)", color: "white", fontWeight: 700 }}>
+            Salut ! 👋 Bienvenu sur <span style={{ color: BF.jaune }}>FasoCV</span>
+          </span>
         </div>
-        <h1 style={{ fontSize: "clamp(28px, 6vw, 58px)", fontWeight: 900, color: "white", letterSpacing: "-2px", lineHeight: 1.1, margin: "0 0 16px", maxWidth: 640 }}>
-          Créez votre CV<br /><span style={{ color: BF.jaune }}>professionnel</span><br />en quelques minutes
-        </h1>
-        <p style={{ fontSize: "clamp(13px, 2vw, 16px)", color: "rgba(255,255,255,0.6)", maxWidth: 480, lineHeight: 1.8, margin: "0 0 36px" }}>
-          Plateforme pour créer, personnaliser et télécharger votre CV en PDF — sans inscription.
-        </p>
-        <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
-          <button onClick={() => onStart(false)} style={{ padding: "14px 32px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 14px 30px ${BF.rouge}55` }}>
+
+        {/* Titre principal */}
+        <div style={{ ...fadeIn(ligne1), marginBottom: 16, maxWidth: 680 }}>
+          <h1 style={{ fontSize: "clamp(26px, 5.5vw, 54px)", fontWeight: 900, color: "white", letterSpacing: "-1.5px", lineHeight: 1.15, margin: 0 }}>
+            Crée ton CV professionnel<br />
+            <span style={{ color: BF.jaune }}>en quelques minutes</span>
+          </h1>
+        </div>
+
+        {/* Sous-titre humain */}
+        <div style={{ ...fadeIn(ligne2), marginBottom: 14, maxWidth: 500 }}>
+          <p style={{ fontSize: "clamp(13px, 2vw, 16px)", color: "rgba(255,255,255,0.65)", lineHeight: 1.8, margin: 0 }}>
+            Crée, personnalise et télécharge ton CV en PDF —<br />
+            <strong style={{ color: "rgba(255,255,255,0.85)" }}>sans inscription, sans prise de tête.</strong>
+          </p>
+        </div>
+
+
+
+        {/* Boutons */}
+        <div style={{ ...fadeIn(boutons), display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 50 }}>
+          <button onClick={() => onStart(false)}
+            style={{ padding: "14px 36px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 14px 30px ${BF.rouge}55` }}>
             Créer mon CV →
           </button>
-          <button onClick={() => { onStart(true); }} style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+          <button onClick={() => onStart(true)}
+            style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
             👁 Voir un exemple
           </button>
         </div>
-        {/* Tableau comparatif gratuit vs premium */}
-        <div style={{ marginTop: 50, maxWidth: 500, width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.08)" }}>
-            <div style={{ padding: "10px 8px", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.5)", textTransform: "uppercase" }}></div>
-            <div style={{ padding: "10px 8px", fontSize: 11, fontWeight: 700, color: "white", textAlign: "center" }}>Gratuit</div>
-            <div style={{ padding: "10px 8px", fontSize: 11, fontWeight: 700, color: BF.jaune, textAlign: "center" }}>⭐ Premium</div>
+
+        {/* Tableau comparatif */}
+        <div style={{ ...fadeIn(tableau), maxWidth: 500, width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden" }}>
+          <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.07)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <span style={{ color: "white", fontWeight: 800, fontSize: 13 }}>Gratuit vs Premium</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.04)" }}>
+            <div style={{ padding: "8px 10px", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}></div>
+            <div style={{ padding: "8px", fontSize: 11, fontWeight: 700, color: "white", textAlign: "center" }}>Gratuit</div>
+            <div style={{ padding: "8px", fontSize: 11, fontWeight: 700, color: BF.jaune, textAlign: "center" }}>Premium</div>
           </div>
           {[
             ["Templates", "1", "2"],
             ["Photo de profil", "❌", "✅"],
-            ["PDF propre", "1x", "Illimité"],
-            ["PDF avec 🇧🇫", "2x", "—"],
-            ["Prix", "Gratuit", "600 FCFA/6mois"],
+            ["PDF sans filigrane", "1 seul", "Illimité"],
+            ["Prix", "0 FCFA", "600 FCFA/6mois"],
           ].map(([label, free, pro], i) => (
             <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ padding: "8px 10px", fontSize: 11, color: "rgba(255,255,255,0.6)" }}>{label}</div>
-              <div style={{ padding: "8px", fontSize: 11, color: "rgba(255,255,255,0.5)", textAlign: "center" }}>{free}</div>
+              <div style={{ padding: "8px 10px", fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{label}</div>
+              <div style={{ padding: "8px", fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{free}</div>
               <div style={{ padding: "8px", fontSize: 11, color: BF.jaune, textAlign: "center", fontWeight: 700 }}>{pro}</div>
             </div>
           ))}
+          <div style={{ padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
+            <a href={CHARIOW.sixMois} target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: 12, fontWeight: 700, color: BF.jaune, textDecoration: "none" }}>
+              Passer Premium maintenant →
+            </a>
+          </div>
         </div>
       </div>
+
+      {/* FOOTER */}
       <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.28)", fontSize: 11 }}>
         © 2025 FasoCV — Tous droits réservés • Fait avec ❤️ pour le Burkina Faso 🇧🇫
       </div>
@@ -681,10 +810,6 @@ export default function FasoCV() {
       if (!element) { setExporting(false); return; }
       const nomFichier = cv.personal.name ? `CV_${cv.personal.name.replace(/\s+/g, "_")}.pdf` : "MonCV_FasoCV.pdf";
 
-      // Afficher temporairement le filigrane si nécessaire
-      const filigraneEl = element.querySelector("[data-filigrane]");
-      if (filigraneEl) filigraneEl.style.display = avecFiligrane ? "flex" : "none";
-
       await html2pdf().set({
         margin: 0,
         filename: nomFichier,
@@ -712,13 +837,14 @@ export default function FasoCV() {
     setExporting(false);
   };
 
-  if (screen === "home") return <Accueil onStart={handleStart} />;
+  if (screen === "home") return <Accueil onStart={handleStart} onPremium={() => setScreen("premium")} />;
+  if (screen === "premium") return <PagePremium onBack={() => setScreen("home")} />;
 
-  // Déterminer si filigrane actif pour l'aperçu
-  const avecFiligranePrev = nbTelechargements >= 1;
+  // Filigrane sur 2e et 3e téléchargements (pas sur le 1er, pas sur Premium)
+  const avecFiligrane = nbTelechargements >= 1 && nbTelechargements < 3;
   const CVTemplate = template === "moderne"
-    ? (props) => <TemplateModerne {...props} avecFiligrane={avecFiligranePrev} />
-    : (props) => <TemplateEpure {...props} avecFiligrane={avecFiligranePrev} />;
+    ? (props) => <TemplateModerne {...props} avecFiligrane={avecFiligrane} />
+    : (props) => <TemplateEpure {...props} avecFiligrane={avecFiligrane} />;
 
   // Bandeau info téléchargements restants
   const dlRestants = Math.max(0, 3 - nbTelechargements);
@@ -783,16 +909,17 @@ export default function FasoCV() {
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
 
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 50, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
-        <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
-          <LogoBF size={28} />
-          <span style={{ fontWeight: 900, fontSize: 16, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
-        </button>
-        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-          {/* Bouton Premium dans le header */}
-          <button onClick={() => { setRaisonModal("suggestion"); setShowModalPremium(true); }}
-            style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}66`, borderRadius: 7, cursor: "pointer", fontSize: 10, fontWeight: 700, color: "#92400e" }}>
-            ⭐ Premium
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 11, fontWeight: 700, color: "#374151" }}>
+            ← Accueil
           </button>
+          <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
+            <LogoBF size={28} />
+            <span style={{ fontWeight: 900, fontSize: 16, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
+          </button>
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+
           {showPreview && (
             <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 7, padding: 2, gap: 1 }}>
               {[{ key: "moderne", label: "Moderne" }, { key: "epure", label: "Épuré" }].map(t => (
