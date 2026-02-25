@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 
 // ─── LIENS CHARIOW ────────────────────────────────────────────────────────────
 const CHARIOW = {
@@ -796,19 +796,36 @@ export default function FasoCV() {
       return;
     }
 
-    // Template Épuré en gratuit → bloquer (sauf si déjà premium... futur)
-    if (template === "epure" && nbTelechargements === 0) {
-      // on laisse passer pour le 1er téléchargement gratuit
-    }
-
-    const avecFiligrane = nbTelechargements >= 1; // 2e et 3e ont filigrane
+    const avecFiligrane = nbTelechargements >= 1;
 
     setExporting(true);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = previewRef.current;
-      if (!element) { setExporting(false); return; }
-      const nomFichier = cv.personal.name ? `CV_${cv.personal.name.replace(/\s+/g, "_")}.pdf` : "MonCV_FasoCV.pdf";
+
+      // ✅ SOLUTION : créer un élément temporaire invisible pour le PDF
+      // peu importe si l'aperçu est ouvert ou pas
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "fixed";
+      tempDiv.style.left = "-9999px";
+      tempDiv.style.top = "0";
+      tempDiv.style.zIndex = "-1";
+      document.body.appendChild(tempDiv);
+
+      // Créer le contenu du CV dans ce div temporaire
+      const { createRoot } = await import("react-dom/client");
+      const root = createRoot(tempDiv);
+
+      await new Promise(resolve => {
+        const CVComp = template === "moderne"
+          ? React.createElement(TemplateModerne, { cv, avecFiligrane })
+          : React.createElement(TemplateEpure, { cv, avecFiligrane });
+        root.render(CVComp);
+        setTimeout(resolve, 300); // laisser le temps au rendu
+      });
+
+      const nomFichier = cv.personal.name
+        ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
+        : "MonCV_FasoCV.pdf";
 
       await html2pdf().set({
         margin: 0,
@@ -817,14 +834,18 @@ export default function FasoCV() {
         html2canvas: { scale: 2, useCORS: true, allowTaint: true, width: 794, windowWidth: 794 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: "avoid-all" },
-      }).from(element).save();
+      }).from(tempDiv.firstChild).save();
+
+      // Nettoyer
+      root.unmount();
+      document.body.removeChild(tempDiv);
 
       // Incrémenter compteur
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
       localStorage.setItem("fasocv_dl", String(nouveau));
 
-      // Après le 1er téléchargement propre, montrer une suggestion premium discrète
+      // Après le 1er téléchargement, suggérer Premium
       if (nouveau === 1) {
         setTimeout(() => {
           setRaisonModal("suggestion");
@@ -832,6 +853,7 @@ export default function FasoCV() {
         }, 1500);
       }
     } catch (err) {
+      console.error(err);
       alert("Erreur lors de l'export PDF. Veuillez réessayer.");
     }
     setExporting(false);
