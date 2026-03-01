@@ -760,7 +760,6 @@ export default function FasoCV() {
   const [showModalPremium, setShowModalPremium] = useState(false);
   const [raisonModal, setRaisonModal] = useState("limite");
   const previewRef = useRef(null);
-  const hiddenCVRef = useRef(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -790,7 +789,6 @@ export default function FasoCV() {
   const handleExportPDF = async () => {
     if (exporting) return;
 
-    // 4e téléchargement et plus → bloquer
     if (nbTelechargements >= 3) {
       setRaisonModal("limite");
       setShowModalPremium(true);
@@ -798,13 +796,20 @@ export default function FasoCV() {
     }
 
     setExporting(true);
+
+    // Ouvrir l'aperçu si pas encore ouvert
+    const etaitFerme = !showPreview;
+    if (etaitFerme) {
+      setShowPreview(true);
+      await new Promise(r => setTimeout(r, 400));
+    }
+
     try {
       const html2pdf = (await import("html2pdf.js")).default;
+      const element = previewRef.current;
 
-      // ✅ Utiliser le div caché qui est toujours dans le DOM
-      const element = hiddenCVRef.current;
       if (!element) {
-        alert("Erreur : impossible de générer le PDF. Réessayez.");
+        alert("Erreur : réessayez.");
         setExporting(false);
         return;
       }
@@ -822,12 +827,13 @@ export default function FasoCV() {
         pagebreak: { mode: "avoid-all" },
       }).from(element).save();
 
-      // Incrémenter compteur
+      // Refermer l'aperçu si on l'avait ouvert automatiquement
+      if (etaitFerme) setShowPreview(false);
+
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
       localStorage.setItem("fasocv_dl", String(nouveau));
 
-      // Après le 1er téléchargement, suggérer Premium
       if (nouveau === 1) {
         setTimeout(() => {
           setRaisonModal("suggestion");
@@ -836,7 +842,8 @@ export default function FasoCV() {
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur lors de l'export PDF. Veuillez réessayer.");
+      alert("Erreur export PDF. Réessayez.");
+      if (etaitFerme) setShowPreview(false);
     }
     setExporting(false);
   };
@@ -910,15 +917,7 @@ export default function FasoCV() {
 
       {showModalPremium && <ModalPremium raison={raisonModal} onClose={() => setShowModalPremium(false)} />}
 
-      {/* ── CV CACHÉ — toujours dans le DOM pour le PDF ── */}
-      <div style={{ position: "fixed", left: "-9999px", top: 0, zIndex: -1, pointerEvents: "none" }}>
-        <div ref={hiddenCVRef}>
-          {template === "moderne"
-            ? <TemplateModerne cv={cv} avecFiligrane={nbTelechargements >= 1} />
-            : <TemplateEpure cv={cv} avecFiligrane={nbTelechargements >= 1} />
-          }
-        </div>
-      </div>
+
 
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
 
@@ -974,8 +973,10 @@ export default function FasoCV() {
             </div>
             <div style={{ flex: 1, overflow: "auto", padding: "16px 10px", display: "flex", justifyContent: "center" }}>
               <div style={{ transform: isMobile ? "scale(0.36)" : "scale(0.62)", transformOrigin: "top center", width: "210mm", flexShrink: 0, marginBottom: isMobile ? -380 : -160 }}>
-                <div ref={previewRef} style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
-                  <CVTemplate cv={cv} />
+                <div style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
+                  <div ref={previewRef}>
+                    <CVTemplate cv={cv} />
+                  </div>
                 </div>
               </div>
             </div>
