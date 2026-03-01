@@ -786,7 +786,143 @@ export default function FasoCV() {
 
   // ─── LOGIQUE TÉLÉCHARGEMENT FREEMIUM ──────────────────────────────────────
   // 1er : propre | 2e et 3e : avec filigrane | 4e+ : bloqué → modal Premium
-  const handleExportPDF = async () => {
+  // ── Génère le HTML pur du CV pour l'export PDF ─────────────────────────────
+  const getCVHTML = (cvData, tmpl, avecFiligrane) => {
+    const p = cvData.personal;
+    const rouge = "#EF2B2D";
+    const rougeFonce = "#c01f21";
+    const vert = "#009A44";
+    const vertFonce = "#007a35";
+    const vertLight = "#e6f7ed";
+    const jaune = "#FCD116";
+
+    const photoHTML = p.photo
+      ? \`<img src="\${p.photo}" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.35);flex-shrink:0"/>\`
+      : "";
+
+    const filigraneHTML = avecFiligrane
+      ? \`<div style="position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.92);border:1.5px solid rgba(239,43,45,0.2);border-radius:20px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.12)"><span style="font-size:13px">🇧🇫</span><span style="font-size:9px;font-weight:800;color:\${rouge}">FasoCV</span></div>\`
+      : "";
+
+    if (tmpl === "moderne") {
+      const skills = cvData.skills.filter(s => s).map(s =>
+        \`<div style="font-size:9.5px;color:#374151;background:white;border-left:3px solid \${vert};padding:3px 6px;margin-bottom:3px;border-radius:0 3px 3px 0">\${s}</div>\`
+      ).join("");
+      const langs = cvData.languages.filter(l => l.language).map(l =>
+        \`<div style="margin-bottom:7px"><div style="font-size:10px;font-weight:700;color:\${vertFonce}">\${l.language}</div><div style="font-size:9px;color:#6b7280;font-style:italic">\${l.level}</div></div>\`
+      ).join("");
+      const exps = cvData.experience.filter(e => e.company || e.role).map(exp =>
+        \`<div style="margin-bottom:9px">
+          <div style="display:flex;justify-content:space-between">
+            <div style="font-size:10.5px;font-weight:700;color:#111827">\${exp.role || "Poste"}</div>
+            <div style="font-size:9px;color:#9ca3af">\${exp.period}</div>
+          </div>
+          <div style="font-size:9.5px;color:\${rouge};font-weight:600;margin-bottom:2px">\${exp.company}</div>
+          \${exp.description ? \`<div style="font-size:9.5px;color:#6b7280;line-height:1.5">\${exp.description}</div>\` : ""}
+        </div>\`
+      ).join("");
+      const edus = cvData.education.filter(e => e.institution || e.degree).map(edu =>
+        \`<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between">
+            <div style="font-size:10.5px;font-weight:700;color:#111827">\${edu.degree || "Diplôme"}</div>
+            <div style="font-size:9px;color:#9ca3af">\${edu.year}</div>
+          </div>
+          <div style="font-size:9.5px;color:\${rouge};font-weight:600">\${edu.institution}</div>
+          \${edu.description ? \`<div style="font-size:9.5px;color:#6b7280;line-height:1.4;margin-top:2px">\${edu.description}</div>\` : ""}
+        </div>\`
+      ).join("");
+
+      return \`<div style="font-family:Georgia,serif;width:210mm;height:297mm;background:white;display:flex;flex-direction:column;overflow:hidden;position:relative">
+        \${filigraneHTML}
+        <div style="background:linear-gradient(135deg,\${rouge},\${rougeFonce});padding:22px 30px 18px;position:relative;flex-shrink:0">
+          <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:\${vert}"></div>
+          <div style="display:flex;gap:18px;align-items:center">
+            \${photoHTML}
+            <div style="color:white">
+              <h1 style="font-size:22px;font-weight:700;margin:0">\${p.name || "Votre Nom"}</h1>
+              <p style="font-size:10px;opacity:0.82;margin:3px 0 8px;letter-spacing:2px;text-transform:uppercase;font-family:system-ui">\${p.title || ""}</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:9.5px;opacity:0.9;font-family:system-ui">
+                \${p.email ? \`<span>✉ \${p.email}</span>\` : ""}
+                \${p.phone ? \`<span>✆ \${p.phone}</span>\` : ""}
+                \${p.location ? \`<span>⌖ \${p.location}</span>\` : ""}
+                \${p.website ? \`<span>⊕ \${p.website}</span>\` : ""}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex:1;overflow:hidden">
+          <div style="width:155px;background:#f0faf4;padding:16px 12px;border-right:2px solid rgba(0,154,68,0.13);flex-shrink:0">
+            \${skills ? \`<div style="margin-bottom:16px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${vert};border-bottom:2px solid \${vert};padding-bottom:3px;margin-bottom:8px">Compétences</div>\${skills}</div>\` : ""}
+            \${langs ? \`<div><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${vert};border-bottom:2px solid \${vert};padding-bottom:3px;margin-bottom:8px">Langues</div>\${langs}</div>\` : ""}
+          </div>
+          <div style="padding:16px 20px;flex:1;overflow:hidden">
+            \${cvData.summary ? \`<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Profil</div><p style="font-size:10px;color:#4b5563;line-height:1.6;margin:0">\${cvData.summary}</p></div>\` : ""}
+            \${exps ? \`<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Expérience Professionnelle</div>\${exps}</div>\` : ""}
+            \${edus ? \`<div><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Formation</div>\${edus}</div>\` : ""}
+          </div>
+        </div>
+      </div>\`;
+    } else {
+      // Template Épuré
+      const skills = cvData.skills.filter(s => s).map(s =>
+        \`<span style="font-size:9px;background:\${vertLight};color:\${vertFonce};border:1px solid rgba(0,154,68,0.2);border-radius:20px;padding:2px 7px;font-weight:600;display:inline-block;margin:2px">\${s}</span>\`
+      ).join("");
+      const langs = cvData.languages.filter(l => l.language).map(l =>
+        \`<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px"><span style="font-weight:700;color:#374151">\${l.language}</span><span style="color:#6b7280;font-size:9px">\${l.level}</span></div>\`
+      ).join("");
+      const exps = cvData.experience.filter(e => e.company || e.role).map(exp =>
+        \`<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #f1f5f9">
+          <div style="display:flex;justify-content:space-between">
+            <div style="font-size:10.5px;font-weight:700;color:#0f172a">\${exp.role || "Poste"}</div>
+            <div style="font-size:9px;color:#94a3b8">\${exp.period}</div>
+          </div>
+          <div style="font-size:9.5px;color:\${rouge};font-weight:600;margin-bottom:2px">\${exp.company}</div>
+          \${exp.description ? \`<div style="font-size:9.5px;color:#64748b;line-height:1.5">\${exp.description}</div>\` : ""}
+        </div>\`
+      ).join("");
+      const edus = cvData.education.filter(e => e.institution || e.degree).map(edu =>
+        \`<div style="margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between">
+            <div style="font-size:10.5px;font-weight:700;color:#0f172a">\${edu.degree || "Diplôme"}</div>
+            <div style="font-size:9px;color:#94a3b8">\${edu.year}</div>
+          </div>
+          <div style="font-size:9.5px;color:\${rouge};font-weight:600">\${edu.institution}</div>
+          \${edu.description ? \`<div style="font-size:9.5px;color:#64748b;line-height:1.4;margin-top:2px">\${edu.description}</div>\` : ""}
+        </div>\`
+      ).join("");
+
+      return \`<div style="font-family:system-ui,sans-serif;width:210mm;height:297mm;background:white;padding:28px 36px;display:flex;flex-direction:column;overflow:hidden;position:relative">
+        \${filigraneHTML}
+        <div style="height:4px;background:linear-gradient(90deg,\${rouge} 33%,\${jaune} 33%,\${jaune} 66%,\${vert} 66%);border-radius:3px;margin-bottom:16px;flex-shrink:0"></div>
+        <div style="display:flex;gap:18px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid \${rouge};flex-shrink:0">
+          \${p.photo ? \`<img src="\${p.photo}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid \${vert};flex-shrink:0"/>\` : ""}
+          <div style="flex:1">
+            <h1 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin:0;color:#0f172a">\${p.name || "Votre Nom"}</h1>
+            <p style="font-size:11px;color:\${rouge};margin:3px 0 8px;font-weight:700">\${p.title || ""}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:9.5px;color:#64748b">
+              \${p.email ? \`<span>\${p.email}</span>\` : ""}
+              \${p.phone ? \`<span>\${p.phone}</span>\` : ""}
+              \${p.location ? \`<span>\${p.location}</span>\` : ""}
+              \${p.website ? \`<span>\${p.website}</span>\` : ""}
+            </div>
+          </div>
+        </div>
+        \${cvData.summary ? \`<div style="margin-bottom:12px;padding:8px 10px;background:\${vertLight};border-left:4px solid \${vert};border-radius:0 6px 6px 0;flex-shrink:0"><p style="font-size:10px;color:#374151;line-height:1.7;margin:0;font-style:italic">\${cvData.summary}</p></div>\` : ""}
+        <div style="display:flex;gap:20px;flex:1;overflow:hidden">
+          <div style="flex:2;overflow:hidden">
+            \${exps ? \`<div style="margin-bottom:14px"><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${rouge};margin-bottom:8px">Expérience Professionnelle</div>\${exps}</div>\` : ""}
+            \${edus ? \`<div><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${rouge};margin-bottom:8px">Formation</div>\${edus}</div>\` : ""}
+          </div>
+          <div style="flex:1;overflow:hidden">
+            \${skills ? \`<div style="margin-bottom:14px"><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${vert};margin-bottom:8px">Compétences</div><div style="display:flex;flex-wrap:wrap;gap:4px">\${skills}</div></div>\` : ""}
+            \${langs ? \`<div><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${vert};margin-bottom:8px">Langues</div>\${langs}</div>\` : ""}
+          </div>
+        </div>
+      </div>\`;
+    }
+  };
+
+    const handleExportPDF = async () => {
     if (exporting) return;
 
     if (nbTelechargements >= 3) {
@@ -797,23 +933,33 @@ export default function FasoCV() {
 
     setExporting(true);
 
-    // Ouvrir l'aperçu si pas encore ouvert
-    const etaitFerme = !showPreview;
-    if (etaitFerme) {
-      setShowPreview(true);
-      await new Promise(r => setTimeout(r, 400));
-    }
-
     try {
+      const avecFiligrane = nbTelechargements >= 1;
+
+      // Créer un iframe invisible pour le rendu propre
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.top = "0";
+      iframe.style.left = "0";
+      iframe.style.width = "794px";
+      iframe.style.height = "1123px";
+      iframe.style.opacity = "0";
+      iframe.style.pointerEvents = "none";
+      iframe.style.zIndex = "-1";
+      document.body.appendChild(iframe);
+
+      // Attendre que l'iframe soit prête
+      await new Promise(r => setTimeout(r, 100));
+
+      const doc = iframe.contentDocument;
+      doc.open();
+      const cvHTML = getCVHTML(cv, template, avecFiligrane);
+      doc.write("<!DOCTYPE html><html><head><meta charset='utf-8'><style>* { box-sizing: border-box; margin: 0; padding: 0; } body { margin: 0; padding: 0; background: white; }</style></head><body>" + cvHTML + "</body></html>");
+      doc.close();
+
+      await new Promise(r => setTimeout(r, 500));
+
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = previewRef.current;
-
-      if (!element) {
-        alert("Erreur : réessayez.");
-        setExporting(false);
-        return;
-      }
-
       const nomFichier = cv.personal.name
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
         : "MonCV_FasoCV.pdf";
@@ -825,10 +971,9 @@ export default function FasoCV() {
         html2canvas: { scale: 2, useCORS: true, allowTaint: true, width: 794, windowWidth: 794 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: "avoid-all" },
-      }).from(element).save();
+      }).from(doc.body.firstChild).save();
 
-      // Refermer l'aperçu si on l'avait ouvert automatiquement
-      if (etaitFerme) setShowPreview(false);
+      document.body.removeChild(iframe);
 
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
@@ -843,7 +988,6 @@ export default function FasoCV() {
     } catch (err) {
       console.error(err);
       alert("Erreur export PDF. Réessayez.");
-      if (etaitFerme) setShowPreview(false);
     }
     setExporting(false);
   };
