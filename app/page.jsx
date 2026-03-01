@@ -760,6 +760,7 @@ export default function FasoCV() {
   const [showModalPremium, setShowModalPremium] = useState(false);
   const [raisonModal, setRaisonModal] = useState("limite");
   const previewRef = useRef(null);
+  const hiddenCVRef = useRef(null);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -796,32 +797,17 @@ export default function FasoCV() {
       return;
     }
 
-    const avecFiligrane = nbTelechargements >= 1;
-
     setExporting(true);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
 
-      // ✅ SOLUTION : créer un élément temporaire invisible pour le PDF
-      // peu importe si l'aperçu est ouvert ou pas
-      const tempDiv = document.createElement("div");
-      tempDiv.style.position = "fixed";
-      tempDiv.style.left = "-9999px";
-      tempDiv.style.top = "0";
-      tempDiv.style.zIndex = "-1";
-      document.body.appendChild(tempDiv);
-
-      // Créer le contenu du CV dans ce div temporaire
-      const { createRoot } = await import("react-dom/client");
-      const root = createRoot(tempDiv);
-
-      await new Promise(resolve => {
-        const CVComp = template === "moderne"
-          ? React.createElement(TemplateModerne, { cv, avecFiligrane })
-          : React.createElement(TemplateEpure, { cv, avecFiligrane });
-        root.render(CVComp);
-        setTimeout(resolve, 300); // laisser le temps au rendu
-      });
+      // ✅ Utiliser le div caché qui est toujours dans le DOM
+      const element = hiddenCVRef.current;
+      if (!element) {
+        alert("Erreur : impossible de générer le PDF. Réessayez.");
+        setExporting(false);
+        return;
+      }
 
       const nomFichier = cv.personal.name
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
@@ -834,11 +820,7 @@ export default function FasoCV() {
         html2canvas: { scale: 2, useCORS: true, allowTaint: true, width: 794, windowWidth: 794 },
         jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         pagebreak: { mode: "avoid-all" },
-      }).from(tempDiv.firstChild).save();
-
-      // Nettoyer
-      root.unmount();
-      document.body.removeChild(tempDiv);
+      }).from(element).save();
 
       // Incrémenter compteur
       const nouveau = nbTelechargements + 1;
@@ -927,6 +909,16 @@ export default function FasoCV() {
       <style>{`* { box-sizing: border-box; } ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }`}</style>
 
       {showModalPremium && <ModalPremium raison={raisonModal} onClose={() => setShowModalPremium(false)} />}
+
+      {/* ── CV CACHÉ — toujours dans le DOM pour le PDF ── */}
+      <div style={{ position: "fixed", left: "-9999px", top: 0, zIndex: -1, pointerEvents: "none" }}>
+        <div ref={hiddenCVRef}>
+          {template === "moderne"
+            ? <TemplateModerne cv={cv} avecFiligrane={nbTelechargements >= 1} />
+            : <TemplateEpure cv={cv} avecFiligrane={nbTelechargements >= 1} />
+          }
+        </div>
+      </div>
 
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
 
