@@ -932,40 +932,341 @@ export default function FasoCV() {
 
     setExporting(true);
     try {
-      // Attendre que React mette à jour le DOM
-      await new Promise(r => setTimeout(r, 300));
+      const avecFiligrane = nbTelechargements >= 1;
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
+      
+      const W = 595; // largeur A4 en points
+      const rouge = [239, 43, 45];
+      const rougeFonce = [192, 31, 33];
+      const vert = [0, 154, 68];
+      const jaune = [252, 209, 22];
+      const p = cv.personal;
 
-      const element = previewRef.current;
-      if (!element) {
-        alert("Erreur rendu. Réessayez.");
-        setExporting(false);
-        return;
+      if (template === "moderne") {
+        // ── HEADER rouge ──
+        pdf.setFillColor(...rouge);
+        pdf.rect(0, 0, W, 90, "F");
+        pdf.setFillColor(...vert);
+        pdf.rect(0, 86, W, 4, "F");
+
+        // Photo
+        let xStart = 20;
+        if (p.photo) {
+          try {
+            pdf.addImage(p.photo, "JPEG", 20, 10, 65, 65, "", "FAST");
+            pdf.setDrawColor(255, 255, 255);
+            xStart = 100;
+          } catch(e) { xStart = 20; }
+        }
+
+        // Nom et titre
+        pdf.setTextColor(255, 255, 255);
+        pdf.setFontSize(22);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(p.name || "Votre Nom", xStart, 35);
+        pdf.setFontSize(9);
+        pdf.setFont("helvetica", "normal");
+        pdf.text((p.title || "").toUpperCase(), xStart, 50);
+        
+        // Contacts
+        pdf.setFontSize(8.5);
+        let cx = xStart;
+        if (p.email) { pdf.text("✉ " + p.email, cx, 66); cx += pdf.getTextWidth("✉ " + p.email) + 15; }
+        if (p.phone) { pdf.text("✆ " + p.phone, cx, 66); cx += pdf.getTextWidth("✆ " + p.phone) + 15; }
+        if (p.location) { pdf.text("⌖ " + p.location, cx, 66); cx += pdf.getTextWidth("⌖ " + p.location) + 15; }
+        if (p.website) { pdf.text("⊕ " + p.website, cx, 66); }
+
+        // ── COLONNE GAUCHE (compétences + langues) ──
+        const colW = 148;
+        pdf.setFillColor(240, 250, 244);
+        pdf.rect(0, 90, colW, 752, "F");
+
+        let yL = 108;
+        const skills = cv.skills.filter(s => s);
+        if (skills.length > 0) {
+          pdf.setTextColor(...vert);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("COMPÉTENCES", 10, yL);
+          pdf.setDrawColor(...vert);
+          pdf.line(10, yL + 2, colW - 10, yL + 2);
+          yL += 10;
+          skills.forEach(skill => {
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(10, yL - 7, colW - 20, 11, "F");
+            pdf.setDrawColor(...vert);
+            pdf.rect(10, yL - 7, 3, 11, "F");
+            pdf.setTextColor(55, 65, 81);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(skill, 16, yL);
+            yL += 13;
+          });
+          yL += 6;
+        }
+
+        const langs = cv.languages.filter(l => l.language);
+        if (langs.length > 0) {
+          pdf.setTextColor(...vert);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("LANGUES", 10, yL);
+          pdf.setDrawColor(...vert);
+          pdf.line(10, yL + 2, colW - 10, yL + 2);
+          yL += 10;
+          langs.forEach(l => {
+            pdf.setTextColor(...vert);
+            pdf.setFontSize(8.5);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(l.language, 10, yL);
+            yL += 9;
+            pdf.setTextColor(107, 114, 128);
+            pdf.setFontSize(7.5);
+            pdf.setFont("helvetica", "italic");
+            pdf.text(l.level, 10, yL);
+            yL += 11;
+          });
+        }
+
+        // ── COLONNE DROITE ──
+        let yR = 108;
+        const rX = colW + 15;
+        const rW = W - colW - 25;
+
+        const drawSection = (title, items, renderFn) => {
+          if (!items.length) return;
+          pdf.setTextColor(...rouge);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(title, rX, yR);
+          pdf.setDrawColor(...rouge);
+          pdf.line(rX, yR + 2, rX + rW, yR + 2);
+          yR += 10;
+          items.forEach(renderFn);
+          yR += 5;
+        };
+
+        if (cv.summary) {
+          drawSection("PROFIL", [cv.summary], (text) => {
+            pdf.setTextColor(75, 85, 99);
+            pdf.setFontSize(8.5);
+            pdf.setFont("helvetica", "normal");
+            const lines = pdf.splitTextToSize(text, rW);
+            pdf.text(lines, rX, yR);
+            yR += lines.length * 10 + 4;
+          });
+        }
+
+        drawSection("EXPÉRIENCE PROFESSIONNELLE", cv.experience.filter(e => e.company || e.role), (exp) => {
+          pdf.setTextColor(17, 24, 39);
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(exp.role || "Poste", rX, yR);
+          pdf.setTextColor(156, 163, 175);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(exp.period || "", W - 20, yR, { align: "right" });
+          yR += 10;
+          pdf.setTextColor(...rouge);
+          pdf.setFontSize(8);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(exp.company || "", rX, yR);
+          yR += 9;
+          if (exp.description) {
+            pdf.setTextColor(107, 114, 128);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "normal");
+            const lines = pdf.splitTextToSize(exp.description, rW);
+            pdf.text(lines, rX, yR);
+            yR += lines.length * 9 + 4;
+          }
+        });
+
+        drawSection("FORMATION", cv.education.filter(e => e.institution || e.degree), (edu) => {
+          pdf.setTextColor(17, 24, 39);
+          pdf.setFontSize(9);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(edu.degree || "Diplôme", rX, yR);
+          pdf.setTextColor(156, 163, 175);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(edu.year || "", W - 20, yR, { align: "right" });
+          yR += 10;
+          pdf.setTextColor(...rouge);
+          pdf.setFontSize(8);
+          pdf.setFont("helvetica", "bold");
+          pdf.text(edu.institution || "", rX, yR);
+          yR += 9;
+          if (edu.description) {
+            pdf.setTextColor(107, 114, 128);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "normal");
+            const lines = pdf.splitTextToSize(edu.description, rW);
+            pdf.text(lines, rX, yR);
+            yR += lines.length * 9 + 4;
+          }
+        });
+
+      } else {
+        // ── TEMPLATE ÉPURÉ ──
+        // Barre tricolore
+        pdf.setFillColor(...rouge); pdf.rect(0, 20, W/3, 4, "F");
+        pdf.setFillColor(...jaune); pdf.rect(W/3, 20, W/3, 4, "F");
+        pdf.setFillColor(...vert); pdf.rect(2*W/3, 20, W/3, 4, "F");
+
+        let xH = 30;
+        if (p.photo) {
+          try {
+            pdf.addImage(p.photo, "JPEG", 30, 32, 65, 65, "", "FAST");
+            xH = 110;
+          } catch(e) { xH = 30; }
+        }
+
+        pdf.setTextColor(15, 23, 42);
+        pdf.setFontSize(22);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(p.name || "Votre Nom", xH, 50);
+        pdf.setTextColor(...rouge);
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "bold");
+        pdf.text(p.title || "", xH, 65);
+        pdf.setTextColor(100, 116, 139);
+        pdf.setFontSize(8);
+        pdf.setFont("helvetica", "normal");
+        let cx2 = xH;
+        if (p.email) { pdf.text(p.email, cx2, 80); cx2 += pdf.getTextWidth(p.email) + 15; }
+        if (p.phone) { pdf.text(p.phone, cx2, 80); cx2 += pdf.getTextWidth(p.phone) + 15; }
+        if (p.location) { pdf.text(p.location, cx2, 80); cx2 += pdf.getTextWidth(p.location) + 15; }
+
+        pdf.setDrawColor(...rouge);
+        pdf.line(20, 103, W - 20, 103);
+
+        let yMain = 118;
+        if (cv.summary) {
+          pdf.setFillColor(230, 247, 237);
+          const sumLines = pdf.splitTextToSize(cv.summary, W - 60);
+          pdf.rect(20, yMain - 8, W - 40, sumLines.length * 10 + 10, "F");
+          pdf.setDrawColor(...vert);
+          pdf.rect(20, yMain - 8, 4, sumLines.length * 10 + 10, "F");
+          pdf.setTextColor(55, 65, 81);
+          pdf.setFontSize(8.5);
+          pdf.setFont("helvetica", "italic");
+          pdf.text(sumLines, 30, yMain);
+          yMain += sumLines.length * 10 + 16;
+        }
+
+        // 2 colonnes
+        const col1X = 20, col1W = 360;
+        const col2X = 395, col2W = 180;
+        let y1 = yMain, y2 = yMain;
+
+        // Expérience
+        if (cv.experience.filter(e => e.company || e.role).length > 0) {
+          pdf.setTextColor(...rouge);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("EXPÉRIENCE PROFESSIONNELLE", col1X, y1);
+          y1 += 10;
+          cv.experience.filter(e => e.company || e.role).forEach(exp => {
+            pdf.setTextColor(15, 23, 42);
+            pdf.setFontSize(9);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(exp.role || "", col1X, y1);
+            pdf.setTextColor(148, 163, 184);
+            pdf.setFontSize(7.5);
+            pdf.text(exp.period || "", col1X + col1W, y1, { align: "right" });
+            y1 += 10;
+            pdf.setTextColor(...rouge);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(exp.company || "", col1X, y1);
+            y1 += 9;
+            if (exp.description) {
+              pdf.setTextColor(100, 116, 139);
+              pdf.setFontSize(8);
+              pdf.setFont("helvetica", "normal");
+              const lines = pdf.splitTextToSize(exp.description, col1W);
+              pdf.text(lines, col1X, y1);
+              y1 += lines.length * 9 + 4;
+            }
+            y1 += 4;
+          });
+        }
+
+        // Formation
+        if (cv.education.filter(e => e.institution || e.degree).length > 0) {
+          pdf.setTextColor(...rouge);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("FORMATION", col1X, y1);
+          y1 += 10;
+          cv.education.filter(e => e.institution || e.degree).forEach(edu => {
+            pdf.setTextColor(15, 23, 42);
+            pdf.setFontSize(9);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(edu.degree || "", col1X, y1);
+            pdf.setTextColor(148, 163, 184);
+            pdf.setFontSize(7.5);
+            pdf.text(edu.year || "", col1X + col1W, y1, { align: "right" });
+            y1 += 10;
+            pdf.setTextColor(...rouge);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(edu.institution || "", col1X, y1);
+            y1 += 9;
+          });
+        }
+
+        // Compétences col droite
+        const skills = cv.skills.filter(s => s);
+        if (skills.length > 0) {
+          pdf.setTextColor(...vert);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("COMPÉTENCES", col2X, y2);
+          y2 += 10;
+          skills.forEach(skill => {
+            pdf.setFillColor(230, 247, 237);
+            pdf.roundedRect(col2X, y2 - 7, col2W, 11, 3, 3, "F");
+            pdf.setTextColor(0, 122, 53);
+            pdf.setFontSize(8);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(skill, col2X + 5, y2);
+            y2 += 13;
+          });
+          y2 += 8;
+        }
+
+        // Langues col droite
+        const langs = cv.languages.filter(l => l.language);
+        if (langs.length > 0) {
+          pdf.setTextColor(...vert);
+          pdf.setFontSize(7.5);
+          pdf.setFont("helvetica", "bold");
+          pdf.text("LANGUES", col2X, y2);
+          y2 += 10;
+          langs.forEach(l => {
+            pdf.setTextColor(55, 65, 81);
+            pdf.setFontSize(8.5);
+            pdf.setFont("helvetica", "bold");
+            pdf.text(l.language, col2X, y2);
+            pdf.setTextColor(107, 114, 128);
+            pdf.setFontSize(7.5);
+            pdf.setFont("helvetica", "normal");
+            pdf.text(l.level, col2X + col2W, y2, { align: "right" });
+            y2 += 12;
+          });
+        }
       }
 
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF } = await import("jspdf");
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        width: 794,
-        height: 1123,
-        windowWidth: 794,
-        logging: false,
-        onclone: (clonedDoc) => {
-          const clonedEl = clonedDoc.querySelector("[data-cv-root]");
-          if (clonedEl) {
-            clonedEl.style.position = "static";
-            clonedEl.style.left = "0";
-          }
-        }
-      });
-
-      const imgData = canvas.toDataURL("image/jpeg", 0.98);
-      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
-      pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+      // Filigrane
+      if (avecFiligrane) {
+        pdf.setFontSize(8);
+        pdf.setTextColor(239, 43, 45);
+        pdf.setFont("helvetica", "bold");
+        pdf.text("🇧🇫 FasoCV", W - 60, 830);
+      }
 
       const nomFichier = cv.personal.name
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
@@ -975,16 +1276,12 @@ export default function FasoCV() {
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
       localStorage.setItem("fasocv_dl", String(nouveau));
-
       if (nouveau === 1) {
-        setTimeout(() => {
-          setRaisonModal("suggestion");
-          setShowModalPremium(true);
-        }, 1500);
+        setTimeout(() => { setRaisonModal("suggestion"); setShowModalPremium(true); }, 1500);
       }
     } catch (err) {
       console.error(err);
-      alert("Erreur export PDF. Réessayez.");
+      alert("Erreur export PDF: " + err.message);
     }
     setExporting(false);
   };
@@ -1058,8 +1355,8 @@ export default function FasoCV() {
 
       {showModalPremium && <ModalPremium raison={raisonModal} onClose={() => setShowModalPremium(false)} />}
 
-      {/* CV TOUJOURS DANS LE DOM - pour export PDF fiable */}
-      <div style={{ position: "fixed", left: "-9999px", top: "0px", width: "794px", zIndex: -999, pointerEvents: "none", visibility: "visible", overflow: "visible" }}>
+      {/* CV CACHÉ POUR PDF - opacity 0 mais dans le flux */}
+      <div style={{ position: "fixed", top: 0, left: 0, width: "794px", opacity: 0, pointerEvents: "none", zIndex: -1 }}>
         <div ref={previewRef}>
           {template === "moderne"
             ? <TemplateModerne cv={cv} avecFiligrane={nbTelechargements >= 1} />
