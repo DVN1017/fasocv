@@ -924,7 +924,6 @@ export default function FasoCV() {
 
     const handleExportPDF = async () => {
     if (exporting) return;
-
     if (nbTelechargements >= 3) {
       setRaisonModal("limite");
       setShowModalPremium(true);
@@ -936,44 +935,46 @@ export default function FasoCV() {
     try {
       const avecFiligrane = nbTelechargements >= 1;
 
-      // Créer un iframe invisible pour le rendu propre
-      const iframe = document.createElement("iframe");
-      iframe.style.position = "fixed";
-      iframe.style.top = "0";
-      iframe.style.left = "0";
-      iframe.style.width = "794px";
-      iframe.style.height = "1123px";
-      iframe.style.opacity = "0";
-      iframe.style.pointerEvents = "none";
-      iframe.style.zIndex = "-1";
-      document.body.appendChild(iframe);
+      // Ouvrir aperçu si fermé, attendre rendu complet
+      const etaitFerme = !showPreview;
+      if (etaitFerme) {
+        setShowPreview(true);
+        await new Promise(r => setTimeout(r, 800));
+      } else {
+        await new Promise(r => setTimeout(r, 200));
+      }
 
-      // Attendre que l'iframe soit prête
-      await new Promise(r => setTimeout(r, 100));
+      const element = previewRef.current;
+      if (!element) {
+        if (etaitFerme) setShowPreview(false);
+        setExporting(false);
+        return;
+      }
 
-      const doc = iframe.contentDocument;
-      doc.open();
-      const cvHTML = getCVHTML(cv, template, avecFiligrane);
-      doc.write("<!DOCTYPE html><html><head><meta charset='utf-8'><style>* { box-sizing: border-box; margin: 0; padding: 0; } body { margin: 0; padding: 0; background: white; }</style></head><body>" + cvHTML + "</body></html>");
-      doc.close();
+      // Utiliser html2canvas directement puis jsPDF
+      const html2canvas = (await import("html2canvas")).default;
+      const { jsPDF } = await import("jspdf");
 
-      await new Promise(r => setTimeout(r, 500));
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        width: element.offsetWidth,
+        height: element.offsetHeight,
+        logging: false,
+      });
 
-      const html2pdf = (await import("html2pdf.js")).default;
+      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
+
       const nomFichier = cv.personal.name
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
         : "MonCV_FasoCV.pdf";
+      pdf.save(nomFichier);
 
-      await html2pdf().set({
-        margin: 0,
-        filename: nomFichier,
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, allowTaint: true, width: 794, windowWidth: 794 },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-        pagebreak: { mode: "avoid-all" },
-      }).from(doc.body.firstChild).save();
-
-      document.body.removeChild(iframe);
+      if (etaitFerme) setShowPreview(false);
 
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
