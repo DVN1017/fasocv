@@ -931,27 +931,17 @@ export default function FasoCV() {
     }
 
     setExporting(true);
-
     try {
-      const avecFiligrane = nbTelechargements >= 1;
-
-      // Ouvrir aperçu si fermé, attendre rendu complet
-      const etaitFerme = !showPreview;
-      if (etaitFerme) {
-        setShowPreview(true);
-        await new Promise(r => setTimeout(r, 800));
-      } else {
-        await new Promise(r => setTimeout(r, 200));
-      }
+      // Attendre que React mette à jour le DOM
+      await new Promise(r => setTimeout(r, 300));
 
       const element = previewRef.current;
       if (!element) {
-        if (etaitFerme) setShowPreview(false);
+        alert("Erreur rendu. Réessayez.");
         setExporting(false);
         return;
       }
 
-      // Utiliser html2canvas directement puis jsPDF
       const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
 
@@ -960,9 +950,17 @@ export default function FasoCV() {
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
-        width: element.offsetWidth,
-        height: element.offsetHeight,
+        width: 794,
+        height: 1123,
+        windowWidth: 794,
         logging: false,
+        onclone: (clonedDoc) => {
+          const clonedEl = clonedDoc.querySelector("[data-cv-root]");
+          if (clonedEl) {
+            clonedEl.style.position = "static";
+            clonedEl.style.left = "0";
+          }
+        }
       });
 
       const imgData = canvas.toDataURL("image/jpeg", 0.98);
@@ -973,8 +971,6 @@ export default function FasoCV() {
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
         : "MonCV_FasoCV.pdf";
       pdf.save(nomFichier);
-
-      if (etaitFerme) setShowPreview(false);
 
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
@@ -1062,6 +1058,16 @@ export default function FasoCV() {
 
       {showModalPremium && <ModalPremium raison={raisonModal} onClose={() => setShowModalPremium(false)} />}
 
+      {/* CV TOUJOURS DANS LE DOM - pour export PDF fiable */}
+      <div style={{ position: "fixed", left: "-9999px", top: "0px", width: "794px", zIndex: -999, pointerEvents: "none", visibility: "visible", overflow: "visible" }}>
+        <div ref={previewRef}>
+          {template === "moderne"
+            ? <TemplateModerne cv={cv} avecFiligrane={nbTelechargements >= 1} />
+            : <TemplateEpure cv={cv} avecFiligrane={nbTelechargements >= 1} />
+          }
+        </div>
+      </div>
+
 
 
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
@@ -1119,9 +1125,7 @@ export default function FasoCV() {
             <div style={{ flex: 1, overflow: "auto", padding: "16px 10px", display: "flex", justifyContent: "center" }}>
               <div style={{ transform: isMobile ? "scale(0.36)" : "scale(0.62)", transformOrigin: "top center", width: "210mm", flexShrink: 0, marginBottom: isMobile ? -380 : -160 }}>
                 <div style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
-                  <div ref={previewRef}>
-                    <CVTemplate cv={cv} />
-                  </div>
+                  <CVTemplate cv={cv} />
                 </div>
               </div>
             </div>
