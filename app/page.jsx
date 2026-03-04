@@ -785,142 +785,6 @@ export default function FasoCV() {
   };
 
   // ─── LOGIQUE TÉLÉCHARGEMENT FREEMIUM ──────────────────────────────────────
-  // 1er : propre | 2e et 3e : avec filigrane | 4e+ : bloqué → modal Premium
-  // ── Génère le HTML pur du CV pour l'export PDF ─────────────────────────────
-  const getCVHTML = (cvData, tmpl, avecFiligrane) => {
-    const p = cvData.personal;
-    const rouge = "#EF2B2D";
-    const rougeFonce = "#c01f21";
-    const vert = "#009A44";
-    const vertFonce = "#007a35";
-    const vertLight = "#e6f7ed";
-    const jaune = "#FCD116";
-
-    const photoHTML = p.photo
-      ? \`<img src="\${p.photo}" style="width:68px;height:68px;border-radius:50%;object-fit:cover;border:3px solid rgba(255,255,255,0.35);flex-shrink:0"/>\`
-      : "";
-
-    const filigraneHTML = avecFiligrane
-      ? \`<div style="position:absolute;bottom:14px;right:14px;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,0.92);border:1.5px solid rgba(239,43,45,0.2);border-radius:20px;padding:4px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.12)"><span style="font-size:13px">🇧🇫</span><span style="font-size:9px;font-weight:800;color:\${rouge}">FasoCV</span></div>\`
-      : "";
-
-    if (tmpl === "moderne") {
-      const skills = cvData.skills.filter(s => s).map(s =>
-        \`<div style="font-size:9.5px;color:#374151;background:white;border-left:3px solid \${vert};padding:3px 6px;margin-bottom:3px;border-radius:0 3px 3px 0">\${s}</div>\`
-      ).join("");
-      const langs = cvData.languages.filter(l => l.language).map(l =>
-        \`<div style="margin-bottom:7px"><div style="font-size:10px;font-weight:700;color:\${vertFonce}">\${l.language}</div><div style="font-size:9px;color:#6b7280;font-style:italic">\${l.level}</div></div>\`
-      ).join("");
-      const exps = cvData.experience.filter(e => e.company || e.role).map(exp =>
-        \`<div style="margin-bottom:9px">
-          <div style="display:flex;justify-content:space-between">
-            <div style="font-size:10.5px;font-weight:700;color:#111827">\${exp.role || "Poste"}</div>
-            <div style="font-size:9px;color:#9ca3af">\${exp.period}</div>
-          </div>
-          <div style="font-size:9.5px;color:\${rouge};font-weight:600;margin-bottom:2px">\${exp.company}</div>
-          \${exp.description ? \`<div style="font-size:9.5px;color:#6b7280;line-height:1.5">\${exp.description}</div>\` : ""}
-        </div>\`
-      ).join("");
-      const edus = cvData.education.filter(e => e.institution || e.degree).map(edu =>
-        \`<div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between">
-            <div style="font-size:10.5px;font-weight:700;color:#111827">\${edu.degree || "Diplôme"}</div>
-            <div style="font-size:9px;color:#9ca3af">\${edu.year}</div>
-          </div>
-          <div style="font-size:9.5px;color:\${rouge};font-weight:600">\${edu.institution}</div>
-          \${edu.description ? \`<div style="font-size:9.5px;color:#6b7280;line-height:1.4;margin-top:2px">\${edu.description}</div>\` : ""}
-        </div>\`
-      ).join("");
-
-      return \`<div style="font-family:Georgia,serif;width:210mm;height:297mm;background:white;display:flex;flex-direction:column;overflow:hidden;position:relative">
-        \${filigraneHTML}
-        <div style="background:linear-gradient(135deg,\${rouge},\${rougeFonce});padding:22px 30px 18px;position:relative;flex-shrink:0">
-          <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:\${vert}"></div>
-          <div style="display:flex;gap:18px;align-items:center">
-            \${photoHTML}
-            <div style="color:white">
-              <h1 style="font-size:22px;font-weight:700;margin:0">\${p.name || "Votre Nom"}</h1>
-              <p style="font-size:10px;opacity:0.82;margin:3px 0 8px;letter-spacing:2px;text-transform:uppercase;font-family:system-ui">\${p.title || ""}</p>
-              <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:9.5px;opacity:0.9;font-family:system-ui">
-                \${p.email ? \`<span>✉ \${p.email}</span>\` : ""}
-                \${p.phone ? \`<span>✆ \${p.phone}</span>\` : ""}
-                \${p.location ? \`<span>⌖ \${p.location}</span>\` : ""}
-                \${p.website ? \`<span>⊕ \${p.website}</span>\` : ""}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;flex:1;overflow:hidden">
-          <div style="width:155px;background:#f0faf4;padding:16px 12px;border-right:2px solid rgba(0,154,68,0.13);flex-shrink:0">
-            \${skills ? \`<div style="margin-bottom:16px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${vert};border-bottom:2px solid \${vert};padding-bottom:3px;margin-bottom:8px">Compétences</div>\${skills}</div>\` : ""}
-            \${langs ? \`<div><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${vert};border-bottom:2px solid \${vert};padding-bottom:3px;margin-bottom:8px">Langues</div>\${langs}</div>\` : ""}
-          </div>
-          <div style="padding:16px 20px;flex:1;overflow:hidden">
-            \${cvData.summary ? \`<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Profil</div><p style="font-size:10px;color:#4b5563;line-height:1.6;margin:0">\${cvData.summary}</p></div>\` : ""}
-            \${exps ? \`<div style="margin-bottom:12px"><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Expérience Professionnelle</div>\${exps}</div>\` : ""}
-            \${edus ? \`<div><div style="font-size:9px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;color:\${rouge};border-bottom:2px solid \${rouge};padding-bottom:3px;margin-bottom:8px">Formation</div>\${edus}</div>\` : ""}
-          </div>
-        </div>
-      </div>\`;
-    } else {
-      // Template Épuré
-      const skills = cvData.skills.filter(s => s).map(s =>
-        \`<span style="font-size:9px;background:\${vertLight};color:\${vertFonce};border:1px solid rgba(0,154,68,0.2);border-radius:20px;padding:2px 7px;font-weight:600;display:inline-block;margin:2px">\${s}</span>\`
-      ).join("");
-      const langs = cvData.languages.filter(l => l.language).map(l =>
-        \`<div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px"><span style="font-weight:700;color:#374151">\${l.language}</span><span style="color:#6b7280;font-size:9px">\${l.level}</span></div>\`
-      ).join("");
-      const exps = cvData.experience.filter(e => e.company || e.role).map(exp =>
-        \`<div style="margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid #f1f5f9">
-          <div style="display:flex;justify-content:space-between">
-            <div style="font-size:10.5px;font-weight:700;color:#0f172a">\${exp.role || "Poste"}</div>
-            <div style="font-size:9px;color:#94a3b8">\${exp.period}</div>
-          </div>
-          <div style="font-size:9.5px;color:\${rouge};font-weight:600;margin-bottom:2px">\${exp.company}</div>
-          \${exp.description ? \`<div style="font-size:9.5px;color:#64748b;line-height:1.5">\${exp.description}</div>\` : ""}
-        </div>\`
-      ).join("");
-      const edus = cvData.education.filter(e => e.institution || e.degree).map(edu =>
-        \`<div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between">
-            <div style="font-size:10.5px;font-weight:700;color:#0f172a">\${edu.degree || "Diplôme"}</div>
-            <div style="font-size:9px;color:#94a3b8">\${edu.year}</div>
-          </div>
-          <div style="font-size:9.5px;color:\${rouge};font-weight:600">\${edu.institution}</div>
-          \${edu.description ? \`<div style="font-size:9.5px;color:#64748b;line-height:1.4;margin-top:2px">\${edu.description}</div>\` : ""}
-        </div>\`
-      ).join("");
-
-      return \`<div style="font-family:system-ui,sans-serif;width:210mm;height:297mm;background:white;padding:28px 36px;display:flex;flex-direction:column;overflow:hidden;position:relative">
-        \${filigraneHTML}
-        <div style="height:4px;background:linear-gradient(90deg,\${rouge} 33%,\${jaune} 33%,\${jaune} 66%,\${vert} 66%);border-radius:3px;margin-bottom:16px;flex-shrink:0"></div>
-        <div style="display:flex;gap:18px;align-items:flex-start;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid \${rouge};flex-shrink:0">
-          \${p.photo ? \`<img src="\${p.photo}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid \${vert};flex-shrink:0"/>\` : ""}
-          <div style="flex:1">
-            <h1 style="font-size:24px;font-weight:900;letter-spacing:-0.5px;margin:0;color:#0f172a">\${p.name || "Votre Nom"}</h1>
-            <p style="font-size:11px;color:\${rouge};margin:3px 0 8px;font-weight:700">\${p.title || ""}</p>
-            <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:9.5px;color:#64748b">
-              \${p.email ? \`<span>\${p.email}</span>\` : ""}
-              \${p.phone ? \`<span>\${p.phone}</span>\` : ""}
-              \${p.location ? \`<span>\${p.location}</span>\` : ""}
-              \${p.website ? \`<span>\${p.website}</span>\` : ""}
-            </div>
-          </div>
-        </div>
-        \${cvData.summary ? \`<div style="margin-bottom:12px;padding:8px 10px;background:\${vertLight};border-left:4px solid \${vert};border-radius:0 6px 6px 0;flex-shrink:0"><p style="font-size:10px;color:#374151;line-height:1.7;margin:0;font-style:italic">\${cvData.summary}</p></div>\` : ""}
-        <div style="display:flex;gap:20px;flex:1;overflow:hidden">
-          <div style="flex:2;overflow:hidden">
-            \${exps ? \`<div style="margin-bottom:14px"><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${rouge};margin-bottom:8px">Expérience Professionnelle</div>\${exps}</div>\` : ""}
-            \${edus ? \`<div><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${rouge};margin-bottom:8px">Formation</div>\${edus}</div>\` : ""}
-          </div>
-          <div style="flex:1;overflow:hidden">
-            \${skills ? \`<div style="margin-bottom:14px"><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${vert};margin-bottom:8px">Compétences</div><div style="display:flex;flex-wrap:wrap;gap:4px">\${skills}</div></div>\` : ""}
-            \${langs ? \`<div><div style="font-size:9px;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:\${vert};margin-bottom:8px">Langues</div>\${langs}</div>\` : ""}
-          </div>
-        </div>
-      </div>\`;
-    }
-  };
 
     const handleExportPDF = async () => {
     if (exporting) return;
@@ -931,358 +795,74 @@ export default function FasoCV() {
     }
 
     setExporting(true);
+
     try {
-      const avecFiligrane = nbTelechargements >= 1;
+      // Ouvrir l'aperçu si fermé — html2canvas a besoin d'un élément visible
+      const etaitFerme = !showPreview;
+      if (etaitFerme) {
+        setShowPreview(true);
+        // Attendre que React rende l'aperçu complètement
+        await new Promise(r => setTimeout(r, 800));
+      }
+
+      const element = previewRef.current;
+      if (!element) {
+        if (etaitFerme) setShowPreview(false);
+        setExporting(false);
+        alert("Erreur. Réessayez.");
+        return;
+      }
+
+      const html2canvas = (await import("html2canvas")).default;
       const { jsPDF } = await import("jspdf");
-      const pdf = new jsPDF({ unit: "pt", format: "a4", orientation: "portrait" });
-      
-      const W = 595; // largeur A4 en points
-      const rouge = [239, 43, 45];
-      const rougeFonce = [192, 31, 33];
-      const vert = [0, 154, 68];
-      const jaune = [252, 209, 22];
-      const p = cv.personal;
 
-      if (template === "moderne") {
-        // ── HEADER rouge ──
-        pdf.setFillColor(...rouge);
-        pdf.rect(0, 0, W, 90, "F");
-        pdf.setFillColor(...vert);
-        pdf.rect(0, 86, W, 4, "F");
+      // Capturer exactement ce qui est rendu à l'écran
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        logging: false,
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+      });
 
-        // Photo
-        let xStart = 20;
-        if (p.photo) {
-          try {
-            pdf.addImage(p.photo, "JPEG", 20, 10, 65, 65, "", "FAST");
-            pdf.setDrawColor(255, 255, 255);
-            xStart = 100;
-          } catch(e) { xStart = 20; }
-        }
-
-        // Nom et titre
-        pdf.setTextColor(255, 255, 255);
-        pdf.setFontSize(22);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(p.name || "Votre Nom", xStart, 35);
-        pdf.setFontSize(9);
-        pdf.setFont("helvetica", "normal");
-        pdf.text((p.title || "").toUpperCase(), xStart, 50);
-        
-        // Contacts
-        pdf.setFontSize(8.5);
-        let cx = xStart;
-        if (p.email) { pdf.text("✉ " + p.email, cx, 66); cx += pdf.getTextWidth("✉ " + p.email) + 15; }
-        if (p.phone) { pdf.text("✆ " + p.phone, cx, 66); cx += pdf.getTextWidth("✆ " + p.phone) + 15; }
-        if (p.location) { pdf.text("⌖ " + p.location, cx, 66); cx += pdf.getTextWidth("⌖ " + p.location) + 15; }
-        if (p.website) { pdf.text("⊕ " + p.website, cx, 66); }
-
-        // ── COLONNE GAUCHE (compétences + langues) ──
-        const colW = 148;
-        pdf.setFillColor(240, 250, 244);
-        pdf.rect(0, 90, colW, 752, "F");
-
-        let yL = 108;
-        const skills = cv.skills.filter(s => s);
-        if (skills.length > 0) {
-          pdf.setTextColor(...vert);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("COMPÉTENCES", 10, yL);
-          pdf.setDrawColor(...vert);
-          pdf.line(10, yL + 2, colW - 10, yL + 2);
-          yL += 10;
-          skills.forEach(skill => {
-            pdf.setFillColor(255, 255, 255);
-            pdf.rect(10, yL - 7, colW - 20, 11, "F");
-            pdf.setDrawColor(...vert);
-            pdf.rect(10, yL - 7, 3, 11, "F");
-            pdf.setTextColor(55, 65, 81);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(skill, 16, yL);
-            yL += 13;
-          });
-          yL += 6;
-        }
-
-        const langs = cv.languages.filter(l => l.language);
-        if (langs.length > 0) {
-          pdf.setTextColor(...vert);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("LANGUES", 10, yL);
-          pdf.setDrawColor(...vert);
-          pdf.line(10, yL + 2, colW - 10, yL + 2);
-          yL += 10;
-          langs.forEach(l => {
-            pdf.setTextColor(...vert);
-            pdf.setFontSize(8.5);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(l.language, 10, yL);
-            yL += 9;
-            pdf.setTextColor(107, 114, 128);
-            pdf.setFontSize(7.5);
-            pdf.setFont("helvetica", "italic");
-            pdf.text(l.level, 10, yL);
-            yL += 11;
-          });
-        }
-
-        // ── COLONNE DROITE ──
-        let yR = 108;
-        const rX = colW + 15;
-        const rW = W - colW - 25;
-
-        const drawSection = (title, items, renderFn) => {
-          if (!items.length) return;
-          pdf.setTextColor(...rouge);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(title, rX, yR);
-          pdf.setDrawColor(...rouge);
-          pdf.line(rX, yR + 2, rX + rW, yR + 2);
-          yR += 10;
-          items.forEach(renderFn);
-          yR += 5;
-        };
-
-        if (cv.summary) {
-          drawSection("PROFIL", [cv.summary], (text) => {
-            pdf.setTextColor(75, 85, 99);
-            pdf.setFontSize(8.5);
-            pdf.setFont("helvetica", "normal");
-            const lines = pdf.splitTextToSize(text, rW);
-            pdf.text(lines, rX, yR);
-            yR += lines.length * 10 + 4;
-          });
-        }
-
-        drawSection("EXPÉRIENCE PROFESSIONNELLE", cv.experience.filter(e => e.company || e.role), (exp) => {
-          pdf.setTextColor(17, 24, 39);
-          pdf.setFontSize(9);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(exp.role || "Poste", rX, yR);
-          pdf.setTextColor(156, 163, 175);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "normal");
-          pdf.text(exp.period || "", W - 20, yR, { align: "right" });
-          yR += 10;
-          pdf.setTextColor(...rouge);
-          pdf.setFontSize(8);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(exp.company || "", rX, yR);
-          yR += 9;
-          if (exp.description) {
-            pdf.setTextColor(107, 114, 128);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "normal");
-            const lines = pdf.splitTextToSize(exp.description, rW);
-            pdf.text(lines, rX, yR);
-            yR += lines.length * 9 + 4;
-          }
-        });
-
-        drawSection("FORMATION", cv.education.filter(e => e.institution || e.degree), (edu) => {
-          pdf.setTextColor(17, 24, 39);
-          pdf.setFontSize(9);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(edu.degree || "Diplôme", rX, yR);
-          pdf.setTextColor(156, 163, 175);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "normal");
-          pdf.text(edu.year || "", W - 20, yR, { align: "right" });
-          yR += 10;
-          pdf.setTextColor(...rouge);
-          pdf.setFontSize(8);
-          pdf.setFont("helvetica", "bold");
-          pdf.text(edu.institution || "", rX, yR);
-          yR += 9;
-          if (edu.description) {
-            pdf.setTextColor(107, 114, 128);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "normal");
-            const lines = pdf.splitTextToSize(edu.description, rW);
-            pdf.text(lines, rX, yR);
-            yR += lines.length * 9 + 4;
-          }
-        });
-
-      } else {
-        // ── TEMPLATE ÉPURÉ ──
-        // Barre tricolore
-        pdf.setFillColor(...rouge); pdf.rect(0, 20, W/3, 4, "F");
-        pdf.setFillColor(...jaune); pdf.rect(W/3, 20, W/3, 4, "F");
-        pdf.setFillColor(...vert); pdf.rect(2*W/3, 20, W/3, 4, "F");
-
-        let xH = 30;
-        if (p.photo) {
-          try {
-            pdf.addImage(p.photo, "JPEG", 30, 32, 65, 65, "", "FAST");
-            xH = 110;
-          } catch(e) { xH = 30; }
-        }
-
-        pdf.setTextColor(15, 23, 42);
-        pdf.setFontSize(22);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(p.name || "Votre Nom", xH, 50);
-        pdf.setTextColor(...rouge);
-        pdf.setFontSize(10);
-        pdf.setFont("helvetica", "bold");
-        pdf.text(p.title || "", xH, 65);
-        pdf.setTextColor(100, 116, 139);
-        pdf.setFontSize(8);
-        pdf.setFont("helvetica", "normal");
-        let cx2 = xH;
-        if (p.email) { pdf.text(p.email, cx2, 80); cx2 += pdf.getTextWidth(p.email) + 15; }
-        if (p.phone) { pdf.text(p.phone, cx2, 80); cx2 += pdf.getTextWidth(p.phone) + 15; }
-        if (p.location) { pdf.text(p.location, cx2, 80); cx2 += pdf.getTextWidth(p.location) + 15; }
-
-        pdf.setDrawColor(...rouge);
-        pdf.line(20, 103, W - 20, 103);
-
-        let yMain = 118;
-        if (cv.summary) {
-          pdf.setFillColor(230, 247, 237);
-          const sumLines = pdf.splitTextToSize(cv.summary, W - 60);
-          pdf.rect(20, yMain - 8, W - 40, sumLines.length * 10 + 10, "F");
-          pdf.setDrawColor(...vert);
-          pdf.rect(20, yMain - 8, 4, sumLines.length * 10 + 10, "F");
-          pdf.setTextColor(55, 65, 81);
-          pdf.setFontSize(8.5);
-          pdf.setFont("helvetica", "italic");
-          pdf.text(sumLines, 30, yMain);
-          yMain += sumLines.length * 10 + 16;
-        }
-
-        // 2 colonnes
-        const col1X = 20, col1W = 360;
-        const col2X = 395, col2W = 180;
-        let y1 = yMain, y2 = yMain;
-
-        // Expérience
-        if (cv.experience.filter(e => e.company || e.role).length > 0) {
-          pdf.setTextColor(...rouge);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("EXPÉRIENCE PROFESSIONNELLE", col1X, y1);
-          y1 += 10;
-          cv.experience.filter(e => e.company || e.role).forEach(exp => {
-            pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(exp.role || "", col1X, y1);
-            pdf.setTextColor(148, 163, 184);
-            pdf.setFontSize(7.5);
-            pdf.text(exp.period || "", col1X + col1W, y1, { align: "right" });
-            y1 += 10;
-            pdf.setTextColor(...rouge);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(exp.company || "", col1X, y1);
-            y1 += 9;
-            if (exp.description) {
-              pdf.setTextColor(100, 116, 139);
-              pdf.setFontSize(8);
-              pdf.setFont("helvetica", "normal");
-              const lines = pdf.splitTextToSize(exp.description, col1W);
-              pdf.text(lines, col1X, y1);
-              y1 += lines.length * 9 + 4;
-            }
-            y1 += 4;
-          });
-        }
-
-        // Formation
-        if (cv.education.filter(e => e.institution || e.degree).length > 0) {
-          pdf.setTextColor(...rouge);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("FORMATION", col1X, y1);
-          y1 += 10;
-          cv.education.filter(e => e.institution || e.degree).forEach(edu => {
-            pdf.setTextColor(15, 23, 42);
-            pdf.setFontSize(9);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(edu.degree || "", col1X, y1);
-            pdf.setTextColor(148, 163, 184);
-            pdf.setFontSize(7.5);
-            pdf.text(edu.year || "", col1X + col1W, y1, { align: "right" });
-            y1 += 10;
-            pdf.setTextColor(...rouge);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(edu.institution || "", col1X, y1);
-            y1 += 9;
-          });
-        }
-
-        // Compétences col droite
-        const skills = cv.skills.filter(s => s);
-        if (skills.length > 0) {
-          pdf.setTextColor(...vert);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("COMPÉTENCES", col2X, y2);
-          y2 += 10;
-          skills.forEach(skill => {
-            pdf.setFillColor(230, 247, 237);
-            pdf.roundedRect(col2X, y2 - 7, col2W, 11, 3, 3, "F");
-            pdf.setTextColor(0, 122, 53);
-            pdf.setFontSize(8);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(skill, col2X + 5, y2);
-            y2 += 13;
-          });
-          y2 += 8;
-        }
-
-        // Langues col droite
-        const langs = cv.languages.filter(l => l.language);
-        if (langs.length > 0) {
-          pdf.setTextColor(...vert);
-          pdf.setFontSize(7.5);
-          pdf.setFont("helvetica", "bold");
-          pdf.text("LANGUES", col2X, y2);
-          y2 += 10;
-          langs.forEach(l => {
-            pdf.setTextColor(55, 65, 81);
-            pdf.setFontSize(8.5);
-            pdf.setFont("helvetica", "bold");
-            pdf.text(l.language, col2X, y2);
-            pdf.setTextColor(107, 114, 128);
-            pdf.setFontSize(7.5);
-            pdf.setFont("helvetica", "normal");
-            pdf.text(l.level, col2X + col2W, y2, { align: "right" });
-            y2 += 12;
-          });
-        }
+      // Ajouter filigrane si 2e ou 3e téléchargement
+      if (nbTelechargements >= 1) {
+        const ctx = canvas.getContext("2d");
+        ctx.font = "bold 22px Arial";
+        ctx.fillStyle = "rgba(239,43,45,0.55)";
+        ctx.fillText("🇧🇫 FasoCV", canvas.width - 200, canvas.height - 30);
       }
 
-      // Filigrane
-      if (avecFiligrane) {
-        pdf.setFontSize(8);
-        pdf.setTextColor(239, 43, 45);
-        pdf.setFont("helvetica", "bold");
-        pdf.text("🇧🇫 FasoCV", W - 60, 830);
-      }
+      const imgData = canvas.toDataURL("image/jpeg", 0.98);
+      const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });
+      pdf.addImage(imgData, "JPEG", 0, 0, 210, 297);
 
       const nomFichier = cv.personal.name
         ? "CV_" + cv.personal.name.replace(/\s+/g, "_") + ".pdf"
         : "MonCV_FasoCV.pdf";
       pdf.save(nomFichier);
 
+      // Refermer l'aperçu si on l'avait ouvert automatiquement
+      if (etaitFerme) setShowPreview(false);
+
       const nouveau = nbTelechargements + 1;
       setNbTelechargements(nouveau);
       localStorage.setItem("fasocv_dl", String(nouveau));
+
       if (nouveau === 1) {
-        setTimeout(() => { setRaisonModal("suggestion"); setShowModalPremium(true); }, 1500);
+        setTimeout(() => {
+          setRaisonModal("suggestion");
+          setShowModalPremium(true);
+        }, 1500);
       }
+
     } catch (err) {
       console.error(err);
       alert("Erreur export PDF: " + err.message);
     }
+
     setExporting(false);
   };
 
@@ -1421,7 +1001,7 @@ export default function FasoCV() {
             </div>
             <div style={{ flex: 1, overflow: "auto", padding: "16px 10px", display: "flex", justifyContent: "center" }}>
               <div style={{ transform: isMobile ? "scale(0.36)" : "scale(0.62)", transformOrigin: "top center", width: "210mm", flexShrink: 0, marginBottom: isMobile ? -380 : -160 }}>
-                <div style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
+                <div ref={previewRef} style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
                   <CVTemplate cv={cv} />
                 </div>
               </div>
