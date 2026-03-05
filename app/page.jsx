@@ -823,8 +823,9 @@ export default function FasoCV() {
         allowTaint: true,
         backgroundColor: "#ffffff",
         logging: false,
-        width: element.scrollWidth,
-        height: element.scrollHeight,
+        width: 794,
+        height: 1123,
+        windowWidth: 794,
       });
 
       // Ajouter filigrane si 2e ou 3e téléchargement
@@ -1001,7 +1002,13 @@ export default function FasoCV() {
             </div>
             <div style={{ flex: 1, overflow: "auto", padding: "16px 10px", display: "flex", justifyContent: "center" }}>
               <div style={{ transform: isMobile ? "scale(0.36)" : "scale(0.62)", transformOrigin: "top center", width: "210mm", flexShrink: 0, marginBottom: isMobile ? -380 : -160 }}>
-                <div ref={previewRef} style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
+                <div style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.28)" }}>
+                  <CVTemplate cv={cv} />
+                </div>
+              </div>
+              {/* CV à taille réelle caché pour export PDF */}
+              <div style={{ position: "absolute", left: "-9999px", top: 0, width: "794px" }}>
+                <div ref={previewRef}>
                   <CVTemplate cv={cv} />
                 </div>
               </div>
