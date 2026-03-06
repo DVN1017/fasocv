@@ -410,7 +410,7 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
     <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "1.8px", textTransform: "uppercase", color, borderBottom: `2px solid ${color}`, paddingBottom: 3, marginBottom: 8, fontFamily: "system-ui" }}>{title}</div>
   );
   return (
-    <div style={{ fontFamily: "'Georgia', serif", width: "210mm", height: "297mm", background: "white", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+    <div style={{ fontFamily: "'Georgia', serif", width: "794px", minHeight: "1123px", background: "white", display: "flex", flexDirection: "column", position: "relative" }}>
       {avecFiligrane && <Filigrane />}
       <div style={{ background: `linear-gradient(135deg, ${BF.rouge} 0%, ${BF.rougeFonce} 100%)`, padding: "22px 30px 18px", position: "relative", flexShrink: 0 }}>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 4, background: BF.vert }} />
@@ -496,7 +496,7 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
     <div style={{ fontSize: 9, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color, marginBottom: 8 }}>{title}</div>
   );
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", width: "210mm", height: "297mm", background: "white", padding: "28px 36px", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative" }}>
+    <div style={{ fontFamily: "system-ui, sans-serif", width: "794px", minHeight: "1123px", background: "white", padding: "28px 36px", display: "flex", flexDirection: "column", position: "relative" }}>
       {avecFiligrane && <Filigrane />}
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, borderRadius: 3, marginBottom: 16, flexShrink: 0 }} />
       <div style={{ display: "flex", gap: 18, alignItems: "flex-start", marginBottom: 14, paddingBottom: 14, borderBottom: `2px solid ${BF.rouge}`, flexShrink: 0 }}>
