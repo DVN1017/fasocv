@@ -407,7 +407,7 @@ function Filigrane() {
 function TemplateModerne({ cv, avecFiligrane = false }) {
   const { personal, summary, experience, education, skills, languages } = cv;
   const T = ({ title, color }) => (
-    <div style={{ fontSize: 9, fontWeight: 800, letterSpacing: "1.8px", textTransform: "uppercase", color, borderBottom: `2px solid ${color}`, paddingBottom: 3, marginBottom: 8, fontFamily: "system-ui" }}>{title}</div>
+    <div style={{ fontSize: 11.7, fontWeight: 800, letterSpacing: "1.8px", textTransform: "uppercase", color, borderBottom: `2px solid ${color}`, paddingBottom: 3, marginBottom: 8, fontFamily: "system-ui" }}>{title}</div>
   );
   return (
     <div style={{ fontFamily: "'Georgia', serif", width: "794px", minHeight: "1123px", background: "white", display: "flex", flexDirection: "column", position: "relative" }}>
@@ -417,9 +417,9 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
         <div style={{ display: "flex", gap: 18, alignItems: "center", position: "relative", zIndex: 1 }}>
           {personal.photo && <img src={personal.photo} alt="Photo" style={{ width: 68, height: 68, borderRadius: "50%", objectFit: "cover", border: "3px solid rgba(255,255,255,0.35)", flexShrink: 0 }} />}
           <div style={{ color: "white" }}>
-            <h1 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>{personal.name || "Votre Nom"}</h1>
-            <p style={{ fontSize: 10, opacity: 0.82, margin: "3px 0 8px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "system-ui" }}>{personal.title || "Votre Poste"}</p>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: 9.5, opacity: 0.9, fontFamily: "system-ui" }}>
+            <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>{personal.name || "Votre Nom"}</h1>
+            <p style={{ fontSize: 11, opacity: 0.82, margin: "3px 0 8px", letterSpacing: "2px", textTransform: "uppercase", fontFamily: "system-ui" }}>{personal.title || "Votre Poste"}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", fontSize: 12.3, opacity: 0.9, fontFamily: "system-ui" }}>
               {personal.email && <span>✉ {personal.email}</span>}
               {personal.phone && <span>✆ {personal.phone}</span>}
               {personal.location && <span>⌖ {personal.location}</span>}
@@ -428,13 +428,13 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
           </div>
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "155px 1fr", flex: 1, overflow: "hidden" }}>
-        <div style={{ background: "#f0faf4", padding: "16px 12px", borderRight: `2px solid ${BF.vert}22` }}>
+      <div style={{ display: "grid", gridTemplateColumns: "155px 1fr", flex: 1 }}>
+        <div style={{ background: "#f0faf4", padding: "16px 12px", borderRight: `2px solid ${BF.vert}22`, minHeight: "100%" }}>
           {skills.filter(s => s).length > 0 && (
             <div style={{ marginBottom: 16 }}>
               <T title="Compétences" color={BF.vert} />
               {skills.filter(s => s).map((skill, i) => (
-                <div key={i} style={{ fontSize: 9.5, color: "#374151", background: "white", borderLeft: `3px solid ${BF.vert}`, padding: "3px 6px", marginBottom: 3, borderRadius: "0 3px 3px 0" }}>{skill}</div>
+                <div key={i} style={{ fontSize: 12.3, color: "#374151", background: "white", borderLeft: `3px solid ${BF.vert}`, padding: "3px 6px", marginBottom: 3, borderRadius: "0 3px 3px 0" }}>{skill}</div>
               ))}
             </div>
           )}
@@ -443,26 +443,26 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
               <T title="Langues" color={BF.vert} />
               {languages.filter(l => l.language).map(l => (
                 <div key={l.id} style={{ marginBottom: 7 }}>
-                  <div style={{ fontSize: 10, fontWeight: 700, color: BF.vertFonce }}>{l.language}</div>
-                  <div style={{ fontSize: 9, color: "#6b7280", fontStyle: "italic" }}>{l.level}</div>
+                  <div style={{ fontSize: 11, fontWeight: 700, color: BF.vertFonce }}>{l.language}</div>
+                  <div style={{ fontSize: 11.7, color: "#6b7280", fontStyle: "italic" }}>{l.level}</div>
                 </div>
               ))}
             </div>
           )}
         </div>
         <div style={{ padding: "16px 20px" }}>
-          {summary && <div style={{ marginBottom: 12 }}><T title="Profil" color={BF.rouge} /><p style={{ fontSize: 10, color: "#4b5563", lineHeight: 1.6, margin: 0 }}>{summary}</p></div>}
+          {summary && <div style={{ marginBottom: 12 }}><T title="Profil" color={BF.rouge} /><p style={{ fontSize: 11, color: "#4b5563", lineHeight: 1.6, margin: 0 }}>{summary}</p></div>}
           {experience.filter(e => e.company || e.role).length > 0 && (
             <div style={{ marginBottom: 12 }}>
               <T title="Expérience Professionnelle" color={BF.rouge} />
               {experience.filter(e => e.company || e.role).map(exp => (
                 <div key={exp.id} style={{ marginBottom: 9 }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#111827" }}>{exp.role || "Poste"}</div>
-                    <div style={{ fontSize: 9, color: "#9ca3af" }}>{exp.period}</div>
+                    <div style={{ fontSize: 13.7, fontWeight: 700, color: "#111827" }}>{exp.role || "Poste"}</div>
+                    <div style={{ fontSize: 11.7, color: "#9ca3af" }}>{exp.period}</div>
                   </div>
-                  <div style={{ fontSize: 9.5, color: BF.rouge, fontWeight: 600, marginBottom: 2 }}>{exp.company}</div>
-                  {exp.description && <p style={{ fontSize: 9.5, color: "#6b7280", margin: 0, lineHeight: 1.5 }}>{exp.description}</p>}
+                  <div style={{ fontSize: 12.3, color: BF.rouge, fontWeight: 600, marginBottom: 2 }}>{exp.company}</div>
+                  {exp.description && <p style={{ fontSize: 12.3, color: "#6b7280", margin: 0, lineHeight: 1.5 }}>{exp.description}</p>}
                 </div>
               ))}
             </div>
@@ -473,11 +473,11 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
               {education.filter(e => e.institution || e.degree).map(edu => (
                 <div key={edu.id} style={{ marginBottom: 8 }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#111827" }}>{edu.degree || "Diplôme"}</div>
-                    <div style={{ fontSize: 9, color: "#9ca3af" }}>{edu.year}</div>
+                    <div style={{ fontSize: 13.7, fontWeight: 700, color: "#111827" }}>{edu.degree || "Diplôme"}</div>
+                    <div style={{ fontSize: 11.7, color: "#9ca3af" }}>{edu.year}</div>
                   </div>
-                  <div style={{ fontSize: 9.5, color: BF.rouge, fontWeight: 600 }}>{edu.institution}</div>
-                  {edu.description && <p style={{ fontSize: 9.5, color: "#6b7280", margin: "2px 0 0", lineHeight: 1.4 }}>{edu.description}</p>}
+                  <div style={{ fontSize: 12.3, color: BF.rouge, fontWeight: 600 }}>{edu.institution}</div>
+                  {edu.description && <p style={{ fontSize: 12.3, color: "#6b7280", margin: "2px 0 0", lineHeight: 1.4 }}>{edu.description}</p>}
                 </div>
               ))}
             </div>
@@ -493,7 +493,7 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
 function TemplateEpure({ cv, avecFiligrane = false }) {
   const { personal, summary, experience, education, skills, languages } = cv;
   const S = ({ title, color = BF.rouge }) => (
-    <div style={{ fontSize: 9, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color, marginBottom: 8 }}>{title}</div>
+    <div style={{ fontSize: 11.7, fontWeight: 900, letterSpacing: "2px", textTransform: "uppercase", color, marginBottom: 8 }}>{title}</div>
   );
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", width: "794px", minHeight: "1123px", background: "white", padding: "28px 36px", display: "flex", flexDirection: "column", position: "relative" }}>
@@ -502,9 +502,9 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
       <div style={{ display: "flex", gap: 18, alignItems: "flex-start", marginBottom: 14, paddingBottom: 14, borderBottom: `2px solid ${BF.rouge}`, flexShrink: 0 }}>
         {personal.photo && <img src={personal.photo} alt="Photo" style={{ width: 72, height: 72, borderRadius: "50%", objectFit: "cover", border: `3px solid ${BF.vert}`, flexShrink: 0 }} />}
         <div style={{ flex: 1 }}>
-          <h1 style={{ fontSize: 24, fontWeight: 900, letterSpacing: "-0.5px", margin: 0, color: "#0f172a" }}>{personal.name || "Votre Nom"}</h1>
-          <p style={{ fontSize: 11, color: BF.rouge, margin: "3px 0 8px", fontWeight: 700 }}>{personal.title || "Votre Poste"}</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", fontSize: 9.5, color: "#64748b" }}>
+          <h1 style={{ fontSize: 31.2, fontWeight: 900, letterSpacing: "-0.5px", margin: 0, color: "#0f172a" }}>{personal.name || "Votre Nom"}</h1>
+          <p style={{ fontSize: 14.3, color: BF.rouge, margin: "3px 0 8px", fontWeight: 700 }}>{personal.title || "Votre Poste"}</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", fontSize: 12.3, color: "#64748b" }}>
             {personal.email && <span>{personal.email}</span>}
             {personal.phone && <span>{personal.phone}</span>}
             {personal.location && <span>{personal.location}</span>}
@@ -514,7 +514,7 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
       </div>
       {summary && (
         <div style={{ marginBottom: 12, padding: "8px 10px", background: BF.vertLight, borderLeft: `4px solid ${BF.vert}`, borderRadius: "0 6px 6px 0", flexShrink: 0 }}>
-          <p style={{ fontSize: 10, color: "#374151", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{summary}</p>
+          <p style={{ fontSize: 11, color: "#374151", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>{summary}</p>
         </div>
       )}
       <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, flex: 1, overflow: "hidden" }}>
@@ -525,11 +525,11 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
               {experience.filter(e => e.company || e.role).map(exp => (
                 <div key={exp.id} style={{ marginBottom: 9, paddingBottom: 9, borderBottom: "1px solid #f1f5f9" }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#0f172a" }}>{exp.role || "Poste"}</div>
-                    <div style={{ fontSize: 9, color: "#94a3b8" }}>{exp.period}</div>
+                    <div style={{ fontSize: 13.7, fontWeight: 700, color: "#0f172a" }}>{exp.role || "Poste"}</div>
+                    <div style={{ fontSize: 11.7, color: "#94a3b8" }}>{exp.period}</div>
                   </div>
-                  <div style={{ fontSize: 9.5, color: BF.rouge, fontWeight: 600, marginBottom: 2 }}>{exp.company}</div>
-                  {exp.description && <p style={{ fontSize: 9.5, color: "#64748b", margin: 0, lineHeight: 1.5 }}>{exp.description}</p>}
+                  <div style={{ fontSize: 12.3, color: BF.rouge, fontWeight: 600, marginBottom: 2 }}>{exp.company}</div>
+                  {exp.description && <p style={{ fontSize: 12.3, color: "#64748b", margin: 0, lineHeight: 1.5 }}>{exp.description}</p>}
                 </div>
               ))}
             </div>
@@ -540,11 +540,11 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
               {education.filter(e => e.institution || e.degree).map(edu => (
                 <div key={edu.id} style={{ marginBottom: 8 }}>
                   <div style={{ display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: 10.5, fontWeight: 700, color: "#0f172a" }}>{edu.degree || "Diplôme"}</div>
-                    <div style={{ fontSize: 9, color: "#94a3b8" }}>{edu.year}</div>
+                    <div style={{ fontSize: 13.7, fontWeight: 700, color: "#0f172a" }}>{edu.degree || "Diplôme"}</div>
+                    <div style={{ fontSize: 11.7, color: "#94a3b8" }}>{edu.year}</div>
                   </div>
-                  <div style={{ fontSize: 9.5, color: BF.rouge, fontWeight: 600 }}>{edu.institution}</div>
-                  {edu.description && <p style={{ fontSize: 9.5, color: "#64748b", margin: "2px 0 0", lineHeight: 1.4 }}>{edu.description}</p>}
+                  <div style={{ fontSize: 12.3, color: BF.rouge, fontWeight: 600 }}>{edu.institution}</div>
+                  {edu.description && <p style={{ fontSize: 12.3, color: "#64748b", margin: "2px 0 0", lineHeight: 1.4 }}>{edu.description}</p>}
                 </div>
               ))}
             </div>
@@ -556,7 +556,7 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
               <S title="Compétences" color={BF.vert} />
               <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
                 {skills.filter(s => s).map((skill, i) => (
-                  <span key={i} style={{ fontSize: 9, background: BF.vertLight, color: BF.vertFonce, border: `1px solid ${BF.vert}33`, borderRadius: 20, padding: "2px 7px", fontWeight: 600 }}>{skill}</span>
+                  <span key={i} style={{ fontSize: 11.7, background: BF.vertLight, color: BF.vertFonce, border: `1px solid ${BF.vert}33`, borderRadius: 20, padding: "2px 7px", fontWeight: 600 }}>{skill}</span>
                 ))}
               </div>
             </div>
@@ -565,9 +565,9 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
             <div>
               <S title="Langues" color={BF.vert} />
               {languages.filter(l => l.language).map(l => (
-                <div key={l.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 10, marginBottom: 5 }}>
+                <div key={l.id} style={{ display: "flex", justifyContent: "space-between", fontSize: 11, marginBottom: 5 }}>
                   <span style={{ fontWeight: 700, color: "#374151" }}>{l.language}</span>
-                  <span style={{ color: "#6b7280", fontSize: 9 }}>{l.level}</span>
+                  <span style={{ color: "#6b7280", fontSize: 11.7 }}>{l.level}</span>
                 </div>
               ))}
             </div>
@@ -586,12 +586,12 @@ function PagePremium({ onBack }) {
     <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, ${BF.vertFonce} 100%)`, display: "flex", flexDirection: "column" }}>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
       <nav style={{ padding: "14px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: "7px 14px" }}>
+        <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 16.9, fontWeight: 600, padding: "7px 14px" }}>
           ← Retour
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <LogoBF size={28} />
-          <span style={{ color: "white", fontWeight: 900, fontSize: 18 }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
+          <span style={{ color: "white", fontWeight: 900, fontSize: 23.4 }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
       </nav>
 
@@ -599,7 +599,7 @@ function PagePremium({ onBack }) {
         <h1 style={{ fontSize: "clamp(24px, 4vw, 40px)", fontWeight: 900, color: "white", textAlign: "center", margin: "0 0 8px" }}>
           Passe en <span style={{ color: BF.jaune }}>Premium</span>
         </h1>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.55)", marginBottom: 36, textAlign: "center" }}>
+        <p style={{ fontSize: 18.2, color: "rgba(255,255,255,0.55)", marginBottom: 36, textAlign: "center" }}>
           Téléchargements illimités, sans filigrane, 2 templates pro
         </p>
 
@@ -611,7 +611,7 @@ function PagePremium({ onBack }) {
             "✅ PDF illimité sans filigrane",
             "✅ Paiement sécurisé Wave & Orange Money",
           ].map((item, i) => (
-            <div key={i} style={{ fontSize: 13, color: "rgba(255,255,255,0.8)", marginBottom: i < 3 ? 10 : 0 }}>{item}</div>
+            <div key={i} style={{ fontSize: 16.9, color: "rgba(255,255,255,0.8)", marginBottom: i < 3 ? 10 : 0 }}>{item}</div>
           ))}
         </div>
 
@@ -619,29 +619,29 @@ function PagePremium({ onBack }) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, maxWidth: 420, width: "100%" }}>
           <a href={CHARIOW.sixMois} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
             <div style={{ background: "rgba(255,255,255,0.06)", border: `2px solid ${BF.vert}`, borderRadius: 14, padding: "20px 14px", textAlign: "center", cursor: "pointer" }}>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>6 Mois</div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: BF.vert }}>600 <span style={{ fontSize: 13 }}>FCFA</span></div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~100 FCFA/mois</div>
-              <div style={{ padding: "9px", background: BF.vert, borderRadius: 8, color: "white", fontSize: 13, fontWeight: 700 }}>Choisir →</div>
+              <div style={{ fontSize: 14.3, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>6 Mois</div>
+              <div style={{ fontSize: 36.4, fontWeight: 900, color: BF.vert }}>600 <span style={{ fontSize: 16.9 }}>FCFA</span></div>
+              <div style={{ fontSize: 14.3, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~100 FCFA/mois</div>
+              <div style={{ padding: "9px", background: BF.vert, borderRadius: 8, color: "white", fontSize: 16.9, fontWeight: 700 }}>Choisir →</div>
             </div>
           </a>
           <a href={CHARIOW.unAn} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
             <div style={{ background: "rgba(255,255,255,0.06)", border: `2px solid ${BF.jaune}`, borderRadius: 14, padding: "20px 14px", textAlign: "center", cursor: "pointer", position: "relative" }}>
-              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: BF.jaune, color: "#000", fontSize: 9, fontWeight: 800, padding: "3px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>MEILLEURE OFFRE</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>1 An</div>
-              <div style={{ fontSize: 28, fontWeight: 900, color: BF.jaune }}>1000 <span style={{ fontSize: 13 }}>FCFA</span></div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~83 FCFA/mois</div>
-              <div style={{ padding: "9px", background: BF.jaune, borderRadius: 8, color: "#000", fontSize: 13, fontWeight: 700 }}>Choisir →</div>
+              <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: BF.jaune, color: "#000", fontSize: 11.7, fontWeight: 800, padding: "3px 10px", borderRadius: 20, whiteSpace: "nowrap" }}>MEILLEURE OFFRE</div>
+              <div style={{ fontSize: 14.3, color: "rgba(255,255,255,0.5)", marginBottom: 6, textTransform: "uppercase", letterSpacing: "1px" }}>1 An</div>
+              <div style={{ fontSize: 36.4, fontWeight: 900, color: BF.jaune }}>1000 <span style={{ fontSize: 16.9 }}>FCFA</span></div>
+              <div style={{ fontSize: 14.3, color: "rgba(255,255,255,0.35)", margin: "4px 0 14px" }}>~83 FCFA/mois</div>
+              <div style={{ padding: "9px", background: BF.jaune, borderRadius: 8, color: "#000", fontSize: 16.9, fontWeight: 700 }}>Choisir →</div>
             </div>
           </a>
         </div>
 
-        <button onClick={onBack} style={{ marginTop: 24, fontSize: 12, color: "rgba(255,255,255,0.35)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
+        <button onClick={onBack} style={{ marginTop: 24, fontSize: 15.6, color: "rgba(255,255,255,0.35)", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>
           Continuer en gratuit
         </button>
       </div>
 
-      <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.2)", fontSize: 11 }}>
+      <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.2)", fontSize: 14.3 }}>
         © 2025 FasoCV — Tous droits réservés
       </div>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
@@ -685,15 +685,15 @@ function Accueil({ onStart, onPremium }) {
       <nav style={{ padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <LogoBF size={36} />
-          <span style={{ color: "white", fontWeight: 900, fontSize: 20, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
+          <span style={{ color: "white", fontWeight: 900, fontSize: 26.0, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           <button onClick={onPremium}
-            style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
+            style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 15.6, fontWeight: 700 }}>
             Passer Premium
           </button>
           <button onClick={() => onStart(false)}
-            style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+            style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 16.9, fontWeight: 600 }}>
             Commencer →
           </button>
         </div>
@@ -730,11 +730,11 @@ function Accueil({ onStart, onPremium }) {
         {/* Boutons */}
         <div style={{ ...fadeIn(boutons), display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center", marginBottom: 50 }}>
           <button onClick={() => onStart(false)}
-            style={{ padding: "14px 36px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 800, boxShadow: `0 14px 30px ${BF.rouge}55` }}>
+            style={{ padding: "14px 36px", background: `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 19.5, fontWeight: 800, boxShadow: `0 14px 30px ${BF.rouge}55` }}>
             Créer mon CV →
           </button>
           <button onClick={() => onStart(true)}
-            style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 600 }}>
+            style={{ padding: "14px 22px", background: "rgba(255,255,255,0.07)", border: "1.5px solid rgba(255,255,255,0.18)", borderRadius: 12, color: "white", cursor: "pointer", fontSize: 19.5, fontWeight: 600 }}>
             👁 Voir un exemple
           </button>
         </div>
@@ -742,12 +742,12 @@ function Accueil({ onStart, onPremium }) {
         {/* Tableau comparatif */}
         <div style={{ ...fadeIn(tableau), maxWidth: 500, width: "100%", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14, overflow: "hidden" }}>
           <div style={{ padding: "12px 16px", background: "rgba(255,255,255,0.07)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-            <span style={{ color: "white", fontWeight: 800, fontSize: 13 }}>Gratuit vs Premium</span>
+            <span style={{ color: "white", fontWeight: 800, fontSize: 16.9 }}>Gratuit vs Premium</span>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", background: "rgba(255,255,255,0.04)" }}>
-            <div style={{ padding: "8px 10px", fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}></div>
-            <div style={{ padding: "8px", fontSize: 11, fontWeight: 700, color: "white", textAlign: "center" }}>Gratuit</div>
-            <div style={{ padding: "8px", fontSize: 11, fontWeight: 700, color: BF.jaune, textAlign: "center" }}>Premium</div>
+            <div style={{ padding: "8px 10px", fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.4)", textTransform: "uppercase" }}></div>
+            <div style={{ padding: "8px", fontSize: 14.3, fontWeight: 700, color: "white", textAlign: "center" }}>Gratuit</div>
+            <div style={{ padding: "8px", fontSize: 14.3, fontWeight: 700, color: BF.jaune, textAlign: "center" }}>Premium</div>
           </div>
           {[
             ["Templates", "1", "2"],
@@ -756,14 +756,14 @@ function Accueil({ onStart, onPremium }) {
             ["Prix", "0 FCFA", "600 FCFA/6mois"],
           ].map(([label, free, pro], i) => (
             <div key={i} style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-              <div style={{ padding: "8px 10px", fontSize: 11, color: "rgba(255,255,255,0.55)" }}>{label}</div>
-              <div style={{ padding: "8px", fontSize: 11, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{free}</div>
-              <div style={{ padding: "8px", fontSize: 11, color: BF.jaune, textAlign: "center", fontWeight: 700 }}>{pro}</div>
+              <div style={{ padding: "8px 10px", fontSize: 14.3, color: "rgba(255,255,255,0.55)" }}>{label}</div>
+              <div style={{ padding: "8px", fontSize: 14.3, color: "rgba(255,255,255,0.45)", textAlign: "center" }}>{free}</div>
+              <div style={{ padding: "8px", fontSize: 14.3, color: BF.jaune, textAlign: "center", fontWeight: 700 }}>{pro}</div>
             </div>
           ))}
           <div style={{ padding: "10px 16px", borderTop: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
             <a href={CHARIOW.sixMois} target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: 12, fontWeight: 700, color: BF.jaune, textDecoration: "none" }}>
+              style={{ fontSize: 15.6, fontWeight: 700, color: BF.jaune, textDecoration: "none" }}>
               Passer Premium maintenant →
             </a>
           </div>
@@ -771,10 +771,10 @@ function Accueil({ onStart, onPremium }) {
       </div>
 
       {/* FOOTER */}
-      <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.28)", fontSize: 11, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+      <div style={{ textAlign: "center", padding: "16px", color: "rgba(255,255,255,0.28)", fontSize: 14.3, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
         <span>© 2025 FasoCV — Tous droits réservés • Fait avec ❤️ pour le Burkina Faso 🇧🇫</span>
         <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
+          style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 14px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 14.3, fontWeight: 700 }}>
           💬 Nous contacter sur WhatsApp
         </a>
       </div>
@@ -992,12 +992,12 @@ export default function FasoCV() {
 
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 50, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 11, fontWeight: 700, color: "#374151" }}>
+          <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
             ← Accueil
           </button>
           <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
             <LogoBF size={28} />
-            <span style={{ fontWeight: 900, fontSize: 16, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
+            <span style={{ fontWeight: 900, fontSize: 20.8, letterSpacing: "-0.5px", color: "#0f172a" }}>Faso<span style={{ color: BF.rouge }}>CV</span></span>
           </button>
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
@@ -1005,17 +1005,17 @@ export default function FasoCV() {
           {showPreview && (
             <div style={{ display: "flex", background: "#f3f4f6", borderRadius: 7, padding: 2, gap: 1 }}>
               {[{ key: "moderne", label: "Moderne" }, { key: "epure", label: "Épuré" }].map(t => (
-                <button key={t.key} onClick={() => setTemplate(t.key)} style={{ padding: "4px 10px", fontSize: 10, fontWeight: 700, borderRadius: 5, border: "none", cursor: "pointer", background: template === t.key ? "white" : "transparent", color: template === t.key ? BF.rouge : "#6b7280", boxShadow: template === t.key ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>
+                <button key={t.key} onClick={() => setTemplate(t.key)} style={{ padding: "4px 10px", fontSize: 11, fontWeight: 700, borderRadius: 5, border: "none", cursor: "pointer", background: template === t.key ? "white" : "transparent", color: template === t.key ? BF.rouge : "#6b7280", boxShadow: template === t.key ? "0 1px 2px rgba(0,0,0,0.1)" : "none" }}>
                   {t.label}
                 </button>
               ))}
             </div>
           )}
-          <button onClick={() => setShowPreview(!showPreview)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: showPreview ? BF.vertLight : "#f3f4f6", border: `1px solid ${showPreview ? BF.vert : "#e5e7eb"}`, borderRadius: 7, cursor: "pointer", fontSize: 10, fontWeight: 700, color: showPreview ? BF.vertFonce : "#374151" }}>
+          <button onClick={() => setShowPreview(!showPreview)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: showPreview ? BF.vertLight : "#f3f4f6", border: `1px solid ${showPreview ? BF.vert : "#e5e7eb"}`, borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: showPreview ? BF.vertFonce : "#374151" }}>
             <Icon path={showPreview ? icons.back : icons.eye} size={13} />
             {showPreview ? "← Formulaire" : "👁 Aperçu"}
           </button>
-          <button onClick={handleExportPDF} disabled={exporting} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: exporting ? "#9ca3af" : nbTelechargements >= 3 ? BF.rouge : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 7, color: "white", cursor: exporting ? "not-allowed" : "pointer", fontSize: 11, fontWeight: 700 }}>
+          <button onClick={handleExportPDF} disabled={exporting} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: exporting ? "#9ca3af" : nbTelechargements >= 3 ? BF.rouge : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 7, color: "white", cursor: exporting ? "not-allowed" : "pointer", fontSize: 14.3, fontWeight: 700 }}>
             {nbTelechargements >= 3 ? <Icon path={icons.lock} size={12} /> : <Icon path={icons.download} size={12} />}
             {exporting ? "..." : nbTelechargements >= 3 ? "🔒" : "PDF"}
           </button>
@@ -1025,9 +1025,9 @@ export default function FasoCV() {
       {/* Bandeau info téléchargements — caché au début */}
       {nbTelechargements > 0 && (
         <div style={{ background: dlInfo.bg, borderBottom: `1px solid ${dlInfo.color}22`, padding: "5px 14px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <span style={{ fontSize: 11, color: dlInfo.color, fontWeight: 600 }}>📄 {dlInfo.msg}</span>
+          <span style={{ fontSize: 14.3, color: dlInfo.color, fontWeight: 600 }}>📄 {dlInfo.msg}</span>
           <button onClick={() => { setRaisonModal("suggestion"); setShowModalPremium(true); }}
-            style={{ fontSize: 10, fontWeight: 700, color: BF.rouge, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
+            style={{ fontSize: 11, fontWeight: 700, color: BF.rouge, background: "none", border: "none", cursor: "pointer", padding: 0 }}>
             ⭐ Passer Premium
           </button>
         </div>
@@ -1037,8 +1037,8 @@ export default function FasoCV() {
         {showPreview ? (
           <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: "#dde3ea" }}>
             <div style={{ padding: "8px 16px", background: "white", borderBottom: "1px solid #e5e7eb", flexShrink: 0, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ fontSize: 11, fontWeight: 700, color: "#374151", letterSpacing: "1px", textTransform: "uppercase" }}>Aperçu en direct</span>
-              <span style={{ fontSize: 10, color: "#9ca3af", background: "#f3f4f6", padding: "2px 8px", borderRadius: 4 }}>Format A4</span>
+              <span style={{ fontSize: 14.3, fontWeight: 700, color: "#374151", letterSpacing: "1px", textTransform: "uppercase" }}>Aperçu en direct</span>
+              <span style={{ fontSize: 11, color: "#9ca3af", background: "#f3f4f6", padding: "2px 8px", borderRadius: 4 }}>Format A4</span>
             </div>
             <div style={{ flex: 1, overflow: "auto", padding: "16px 10px", display: "flex", justifyContent: "center" }}>
               <div style={{ transform: isMobile ? "scale(0.36)" : "scale(0.62)", transformOrigin: "top center", width: "210mm", flexShrink: 0, marginBottom: isMobile ? -380 : -160 }}>
@@ -1054,7 +1054,7 @@ export default function FasoCV() {
               </div>
             </div>
             <div style={{ padding: "10px 14px", background: "white", borderTop: "1px solid #e5e7eb", flexShrink: 0 }}>
-              <button onClick={handleExportPDF} disabled={exporting} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", background: exporting ? "#9ca3af" : nbTelechargements >= 3 ? BF.rouge : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 10, color: "white", cursor: "pointer", fontSize: 14, fontWeight: 800 }}>
+              <button onClick={handleExportPDF} disabled={exporting} style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", background: exporting ? "#9ca3af" : nbTelechargements >= 3 ? BF.rouge : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 10, color: "white", cursor: "pointer", fontSize: 18.2, fontWeight: 800 }}>
                 {nbTelechargements >= 3
                   ? <><Icon path={icons.lock} size={16} /> Passer Premium pour continuer</>
                   : <><Icon path={icons.download} size={16} /> {exporting ? "Génération en cours..." : "Télécharger mon CV en PDF"}</>
@@ -1077,10 +1077,10 @@ export default function FasoCV() {
       {/* Footer avec contact WhatsApp */}
 
       <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
+        <span style={{ fontSize: 11, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
         <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 14.3, fontWeight: 700 }}>
+          <span style={{ fontSize: 18.2 }}>💬</span> Signaler un problème
         </a>
       </div>
     </div>
