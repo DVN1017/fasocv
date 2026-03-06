@@ -78,13 +78,7 @@ function LogoBF({ size = 28 }) {
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "50%", background: BF.vert }} />
       <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", color: BF.jaune, fontSize: size * 0.58, lineHeight: 1, fontWeight: 900, textShadow: "0 0 2px rgba(0,0,0,0.3)", userSelect: "none" }}>★</div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -155,13 +149,7 @@ function ModalPremium({ onClose, raison }) {
         </div>
       </div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -180,13 +168,7 @@ function Input({ label, value, onChange, placeholder, type = "text" }) {
         onFocus={e => e.target.style.borderColor = BF.vert}
         onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -200,13 +182,7 @@ function Textarea({ label, value, onChange, placeholder, rows = 4 }) {
         onFocus={e => e.target.style.borderColor = BF.vert}
         onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -219,13 +195,7 @@ function Select({ label, value, onChange, options }) {
         {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
       </select>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -260,13 +230,7 @@ function PhotoUpload({ photo, onChange }) {
       </div>
       <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -290,13 +254,7 @@ function StepPersonnel({ cv, update }) {
         <Input label="Site web / LinkedIn" value={p.website} onChange={v => upd("website", v)} placeholder="linkedin.com/in/..." />
       </div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -309,13 +267,7 @@ function StepResume({ cv, update }) {
       </p>
       <Textarea value={cv.summary} onChange={v => update("summary", v)} placeholder="Ingénieur logiciel expérimenté avec plus de 7 ans d'expérience..." rows={6} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -346,13 +298,7 @@ function StepExperience({ cv, update }) {
         <Icon path={icons.plus} size={15} /> Ajouter une expérience
       </button>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -383,13 +329,7 @@ function StepFormation({ cv, update }) {
         <Icon path={icons.plus} size={15} /> Ajouter une formation
       </button>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -417,13 +357,7 @@ function StepCompetences({ cv, update }) {
         </button>
       </div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -445,13 +379,7 @@ function StepLangues({ cv, update }) {
         <Icon path={icons.plus} size={15} /> Ajouter une langue
       </button>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -470,13 +398,7 @@ function Filigrane() {
       <span style={{ fontSize: 13 }}>🇧🇫</span>
       <span style={{ fontSize: 9, fontWeight: 800, color: BF.rouge, letterSpacing: "0.5px" }}>FasoCV</span>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -563,13 +485,7 @@ function TemplateModerne({ cv, avecFiligrane = false }) {
         </div>
       </div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -659,13 +575,7 @@ function TemplateEpure({ cv, avecFiligrane = false }) {
         </div>
       </div>
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -736,13 +646,7 @@ function PagePremium({ onBack }) {
       </div>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -876,13 +780,7 @@ function Accueil({ onStart, onPremium }) {
       </div>
       <div style={{ height: 4, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)` }} />
       {/* Footer avec contact WhatsApp */}
-      <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-        <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
-        <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "5px 12px", background: "#25D366", borderRadius: 8, textDecoration: "none", color: "white", fontSize: 11, fontWeight: 700 }}>
-          <span style={{ fontSize: 14 }}>💬</span> Signaler un problème
-        </a>
-      </div>
+
     </div>
   );
 }
@@ -966,6 +864,8 @@ export default function FasoCV() {
         width: 794,
         height: 1123,
         windowWidth: 794,
+        x: 0,
+        y: 0,
       });
 
       // Ajouter filigrane si 2e ou 3e téléchargement
@@ -1076,9 +976,9 @@ export default function FasoCV() {
 
       {showModalPremium && <ModalPremium raison={raisonModal} onClose={() => setShowModalPremium(false)} />}
 
-      {/* CV CACHÉ POUR PDF - opacity 0 mais dans le flux */}
-      <div style={{ position: "fixed", top: 0, left: 0, width: "794px", opacity: 0, pointerEvents: "none", zIndex: -1 }}>
-        <div ref={previewRef}>
+      {/* CV RENDU POUR PDF - visible mais hors écran */}
+      <div style={{ position: "absolute", top: "-9999px", left: 0, width: "794px", visibility: "visible", overflow: "visible" }}>
+        <div ref={previewRef} data-cv-export="true">
           {template === "moderne"
             ? <TemplateModerne cv={cv} avecFiligrane={nbTelechargements >= 1} />
             : <TemplateEpure cv={cv} avecFiligrane={nbTelechargements >= 1} />
@@ -1175,6 +1075,7 @@ export default function FasoCV() {
         )}
       </div>
       {/* Footer avec contact WhatsApp */}
+
       <div style={{ background: "white", borderTop: "1px solid #f3f4f6", padding: "8px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
         <span style={{ fontSize: 10, color: "#9ca3af" }}>© 2025 FasoCV — Tous droits réservés</span>
         <a href="https://wa.me/22669064476?text=Bonjour%2C%20j'ai%20un%20problème%20avec%20FasoCV%20%3A%20" target="_blank" rel="noopener noreferrer"
