@@ -1,5 +1,11 @@
 "use client";
 import React, { useState, useRef, useCallback, useEffect } from "react";
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 // ─── LIENS CHARIOW ────────────────────────────────────────────────────────────
 const CHARIOW = {
@@ -652,7 +658,7 @@ function PagePremium({ onBack }) {
 }
 
 // ─── PAGE D'ACCUEIL ───────────────────────────────────────────────────────────
-function Accueil({ onStart, onPremium }) {
+function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
   const [visible, setVisible] = useState(false);
   const [ligne1, setLigne1] = useState(false);
   const [ligne2, setLigne2] = useState(false);
@@ -687,11 +693,23 @@ function Accueil({ onStart, onPremium }) {
           <LogoBF size={36} />
           <span style={{ color: "white", fontWeight: 900, fontSize: 26.0, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <button onClick={onPremium}
             style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 15.6, fontWeight: 700 }}>
             Passer Premium
           </button>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>👤 {user.email?.split("@")[0]}</span>
+              <button onClick={onSignOut} style={{ padding: "7px 12px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+                Déconnexion
+              </button>
+            </div>
+          ) : (
+            <button onClick={onAuth} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
+              Se connecter
+            </button>
+          )}
           <button onClick={() => onStart(false)}
             style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 16.9, fontWeight: 600 }}>
             Commencer →
@@ -786,7 +804,148 @@ function Accueil({ onStart, onPremium }) {
 }
 
 // ─── APPLICATION PRINCIPALE ───────────────────────────────────────────────────
+
+// ─── COMPOSANT AUTH ────────────────────────────────────────────────────────────
+function PageAuth({ onConnecte }) {
+  const [mode, setMode] = useState("choix"); // choix | email | code
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [erreur, setErreur] = useState("");
+  const [message, setMessage] = useState("");
+
+  const envoyerMagicLink = async () => {
+    if (!email.trim()) { setErreur("Entre ton email"); return; }
+    setLoading(true);
+    setErreur("");
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim(),
+      options: { shouldCreateUser: true }
+    });
+    if (error) {
+      setErreur("Erreur : " + error.message);
+    } else {
+      setMessage("Un lien de connexion a été envoyé à " + email + ". Clique dessus pour te connecter !");
+      setMode("envoye");
+    }
+    setLoading(false);
+  };
+
+  const verifierCode = async () => {
+    if (!code.trim()) { setErreur("Entre le code"); return; }
+    setLoading(true);
+    setErreur("");
+    const { data, error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: code.trim(),
+      type: "email"
+    });
+    if (error) {
+      setErreur("Code incorrect. Réessaye.");
+    } else {
+      onConnecte(data.user);
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, #0a0a0a 100%)`, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+      <div style={{ width: "100%", maxWidth: 420 }}>
+        {/* Logo */}
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
+            <img src="/favicon.ico" alt="FasoCV" style={{ width: 36, height: 36 }} onError={e => e.target.style.display='none'} />
+            <span style={{ fontSize: 28, fontWeight: 900, color: "white" }}>Faso<span style={{ color: "#EF2B2D" }}>CV</span></span>
+          </div>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Connecte-toi pour sauvegarder ton CV</p>
+        </div>
+
+        <div style={{ background: "white", borderRadius: 16, padding: 32, boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }}>
+          {mode === "choix" && (
+            <>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 6px" }}>Connexion / Inscription</h2>
+              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 24 }}>Entre ton email — on t'envoie un lien de connexion direct, sans mot de passe.</p>
+              
+              <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Ton email</label>
+              <input
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && envoyerMagicLink()}
+                placeholder="exemple@gmail.com"
+                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+              />
+              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 8px" }}>{erreur}</p>}
+              
+              <button
+                onClick={envoyerMagicLink}
+                disabled={loading}
+                style={{ width: "100%", padding: "12px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 16 }}>
+                {loading ? "Envoi en cours..." : "Recevoir le lien de connexion"}
+              </button>
+
+              <div style={{ textAlign: "center" }}>
+                <button onClick={() => setMode("code")} style={{ background: "none", border: "none", color: "#6b7280", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
+                  J'ai déjà un code à 6 chiffres
+                </button>
+              </div>
+            </>
+          )}
+
+          {mode === "envoye" && (
+            <>
+              <div style={{ textAlign: "center", marginBottom: 20 }}>
+                <div style={{ fontSize: 48, marginBottom: 12 }}>📧</div>
+                <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", margin: "0 0 8px" }}>Vérifie ton email !</h2>
+                <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>{message}</p>
+              </div>
+              <button onClick={() => setMode("code")} style={{ width: "100%", padding: "10px", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                Entrer le code manuellement
+              </button>
+              <button onClick={() => { setMode("choix"); setMessage(""); }} style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer", marginTop: 8 }}>
+                Changer d'email
+              </button>
+            </>
+          )}
+
+          {mode === "code" && (
+            <>
+              <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", margin: "0 0 6px" }}>Entre ton code</h2>
+              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 20 }}>Le code à 6 chiffres envoyé à {email || "ton email"}</p>
+              <input
+                type="text"
+                value={code}
+                onChange={e => setCode(e.target.value)}
+                onKeyDown={e => e.key === "Enter" && verifierCode()}
+                placeholder="123456"
+                maxLength={6}
+                style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e5e7eb", borderRadius: 8, fontSize: 20, textAlign: "center", letterSpacing: 8, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+              />
+              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 8px" }}>{erreur}</p>}
+              <button
+                onClick={verifierCode}
+                disabled={loading}
+                style={{ width: "100%", padding: "12px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 12 }}>
+                {loading ? "Vérification..." : "Se connecter"}
+              </button>
+              <button onClick={() => setMode("choix")} style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer" }}>
+                ← Retour
+              </button>
+            </>
+          )}
+        </div>
+
+        <p style={{ textAlign: "center", marginTop: 20, color: "rgba(255,255,255,0.3)", fontSize: 11 }}>
+          © 2025 FasoCV — Tes données sont sécurisées
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function FasoCV() {
+  const [user, setUser] = useState(null);
+  const [sessionLoading, setSessionLoading] = useState(true);
   const [screen, setScreen] = useState("home");
   const [cv, setCv] = useState(EMPTY_CV);
   const [step, setStep] = useState(0);
@@ -798,6 +957,18 @@ export default function FasoCV() {
   const [showModalPremium, setShowModalPremium] = useState(false);
   const [raisonModal, setRaisonModal] = useState("limite");
   const previewRef = useRef(null);
+
+  // Vérifier session Supabase au démarrage
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setSessionLoading(false);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 768);
@@ -907,7 +1078,16 @@ export default function FasoCV() {
     setExporting(false);
   };
 
-  if (screen === "home") return <Accueil onStart={handleStart} onPremium={() => setScreen("premium")} />;
+  if (screen === "home") return <Accueil onStart={handleStart} onPremium={() => setScreen("premium")} user={user} onAuth={() => setScreen("auth")} onSignOut={async () => { await supabase.auth.signOut(); setUser(null); }} />;
+  // Chargement session
+  if (sessionLoading) return (
+    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0f05" }}>
+      <div style={{ color: "white", fontSize: 16 }}>Chargement...</div>
+    </div>
+  );
+
+  if (!user && screen === "auth") return <PageAuth onConnecte={(u) => { setUser(u); setScreen("home"); }} />;
+
   if (screen === "premium") return <PagePremium onBack={() => setScreen("home")} />;
 
   // Filigrane sur 2e et 3e téléchargements (pas sur le 1er, pas sur Premium)
@@ -1019,6 +1199,20 @@ export default function FasoCV() {
             {nbTelechargements >= 3 ? <Icon path={icons.lock} size={12} /> : <Icon path={icons.download} size={12} />}
             {exporting ? "..." : nbTelechargements >= 3 ? "🔒" : "PDF"}
           </button>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontSize: 11, color: "#6b7280", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {user.email?.split("@")[0]}
+              </span>
+              <button onClick={async () => { await supabase.auth.signOut(); setUser(null); }} style={{ padding: "5px 10px", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#374151" }}>
+                Déconnexion
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => setScreen("auth")} style={{ padding: "5px 12px", background: BF.vert, border: "none", borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "white" }}>
+              Se connecter
+            </button>
+          )}
         </div>
       </header>
 
