@@ -694,14 +694,12 @@ function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
           <span style={{ color: "white", fontWeight: 900, fontSize: 26.0, letterSpacing: "-0.5px" }}>Faso<span style={{ color: BF.jaune }}>CV</span></span>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <button onClick={onPremium}
-            style={{ padding: "7px 14px", background: `${BF.jaune}22`, border: `1px solid ${BF.jaune}44`, borderRadius: 8, color: BF.jaune, cursor: "pointer", fontSize: 15.6, fontWeight: 700 }}>
-            Passer Premium
-          </button>
+
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 13 }}>👤 {user.email?.split("@")[0]}</span>
-              <button onClick={onSignOut} style={{ padding: "7px 12px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 13, fontWeight: 600 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "5px 12px" }}>
+              <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 600 }}>👤 {user.email?.split("@")[0]}</span>
+              <span style={{ color: "rgba(255,255,255,0.3)" }}>|</span>
+              <button onClick={onSignOut} style={{ background: "none", border: "none", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 12, fontWeight: 600, padding: 0 }}>
                 Déconnexion
               </button>
             </div>
@@ -739,7 +737,7 @@ function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
         <div style={{ ...fadeIn(ligne2), marginBottom: 14, maxWidth: 500 }}>
           <p style={{ fontSize: "clamp(13px, 2vw, 16px)", color: "rgba(255,255,255,0.65)", lineHeight: 1.8, margin: 0 }}>
             Crée, personnalise et télécharge ton CV en PDF —<br />
-            <strong style={{ color: "rgba(255,255,255,0.85)" }}>sans inscription, sans prise de tête.</strong>
+            <strong style={{ color: "rgba(255,255,255,0.85)" }}></strong>
           </p>
         </div>
 
@@ -1172,8 +1170,8 @@ export default function FasoCV() {
 
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 50, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
-            ← Accueil
+          <button onClick={() => { if (showPreview) { setShowPreview(false); } else if (step > 1) { setStep(step - 1); } else { setScreen("home"); } }} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
+            ← {showPreview ? "Formulaire" : step > 1 ? "Précédent" : "Accueil"}
           </button>
           <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
             <LogoBF size={28} />
@@ -1191,20 +1189,21 @@ export default function FasoCV() {
               ))}
             </div>
           )}
-          <button onClick={() => setShowPreview(!showPreview)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: showPreview ? BF.vertLight : "#f3f4f6", border: `1px solid ${showPreview ? BF.vert : "#e5e7eb"}`, borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: showPreview ? BF.vertFonce : "#374151" }}>
-            <Icon path={showPreview ? icons.back : icons.eye} size={13} />
-            {showPreview ? "← Formulaire" : "👁 Aperçu"}
-          </button>
+          {!showPreview && (
+            <button onClick={() => setShowPreview(true)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#374151" }}>
+              <Icon path={icons.eye} size={13} />
+              👁 Aperçu
+            </button>
+          )}
           <button onClick={handleExportPDF} disabled={exporting} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", background: exporting ? "#9ca3af" : nbTelechargements >= 3 ? BF.rouge : `linear-gradient(135deg, ${BF.rouge}, ${BF.rougeFonce})`, border: "none", borderRadius: 7, color: "white", cursor: exporting ? "not-allowed" : "pointer", fontSize: 14.3, fontWeight: 700 }}>
             {nbTelechargements >= 3 ? <Icon path={icons.lock} size={12} /> : <Icon path={icons.download} size={12} />}
             {exporting ? "..." : nbTelechargements >= 3 ? "🔒" : "PDF"}
           </button>
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: 11, color: "#6b7280", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {user.email?.split("@")[0]}
-              </span>
-              <button onClick={async () => { await supabase.auth.signOut(); setUser(null); }} style={{ padding: "5px 10px", background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "#374151" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, padding: "4px 10px" }}>
+              <span style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>👤 {user.email?.split("@")[0]}</span>
+              <span style={{ color: "#d1d5db" }}>|</span>
+              <button onClick={async () => { await supabase.auth.signOut(); setUser(null); }} style={{ background: "none", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: 11, fontWeight: 600, padding: 0 }}>
                 Déconnexion
               </button>
             </div>
