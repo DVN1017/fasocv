@@ -695,7 +695,7 @@ function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
 
-          {user ? (
+          {user && (
             <div style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "5px 12px" }}>
               <span style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, fontWeight: 600 }}>👤 {user.email?.split("@")[0]}</span>
               <span style={{ color: "rgba(255,255,255,0.3)" }}>|</span>
@@ -703,14 +703,10 @@ function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
                 Déconnexion
               </button>
             </div>
-          ) : (
-            <button onClick={onAuth} style={{ padding: "7px 14px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
-              Se connecter
-            </button>
           )}
-          <button onClick={() => onStart(false)}
-            style={{ padding: "7px 16px", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 16.9, fontWeight: 600 }}>
-            Commencer →
+          <button onClick={() => onAuth("inscription")}
+            style={{ padding: "7px 16px", background: BF.rouge, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontSize: 15, fontWeight: 700 }}>
+            S'inscrire
           </button>
         </div>
       </nav>
@@ -804,138 +800,132 @@ function Accueil({ onStart, onPremium, user, onAuth, onSignOut }) {
 // ─── APPLICATION PRINCIPALE ───────────────────────────────────────────────────
 
 // ─── COMPOSANT AUTH ────────────────────────────────────────────────────────────
-function PageAuth({ onConnecte }) {
-  const [mode, setMode] = useState("choix"); // choix | email | code
+function PageAuth({ onConnecte, onBack, mode = "connexion" }) {
   const [email, setEmail] = useState("");
+  const [etape, setEtape] = useState("email"); // email | envoye | code
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [erreur, setErreur] = useState("");
-  const [message, setMessage] = useState("");
 
-  const envoyerMagicLink = async () => {
+  const titre = mode === "inscription" ? "Créer un compte" : "Se connecter";
+  const sousTitre = mode === "inscription"
+    ? "Crée ton compte pour sauvegarder ton CV et accéder à toutes les fonctionnalités."
+    : "Content de te revoir ! Entre ton email pour recevoir ton lien de connexion.";
+
+  const envoyerLien = async () => {
     if (!email.trim()) { setErreur("Entre ton email"); return; }
-    setLoading(true);
-    setErreur("");
+    setLoading(true); setErreur("");
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
       options: { shouldCreateUser: true }
     });
-    if (error) {
-      setErreur("Erreur : " + error.message);
-    } else {
-      setMessage("Un lien de connexion a été envoyé à " + email + ". Clique dessus pour te connecter !");
-      setMode("envoye");
-    }
+    if (error) { setErreur("Erreur : " + error.message); }
+    else { setEtape("envoye"); }
     setLoading(false);
   };
 
   const verifierCode = async () => {
     if (!code.trim()) { setErreur("Entre le code"); return; }
-    setLoading(true);
-    setErreur("");
+    setLoading(true); setErreur("");
     const { data, error } = await supabase.auth.verifyOtp({
-      email: email.trim(),
-      token: code.trim(),
-      type: "email"
+      email: email.trim(), token: code.trim(), type: "email"
     });
-    if (error) {
-      setErreur("Code incorrect. Réessaye.");
-    } else {
-      onConnecte(data.user);
-    }
+    if (error) { setErreur("Code incorrect. Réessaye."); }
+    else { onConnecte(data.user); }
     setLoading(false);
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, #0a0a0a 100%)`, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
-      <div style={{ width: "100%", maxWidth: 420 }}>
-        {/* Logo */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 8 }}>
-            <img src="/favicon.ico" alt="FasoCV" style={{ width: 36, height: 36 }} onError={e => e.target.style.display='none'} />
-            <span style={{ fontSize: 28, fontWeight: 900, color: "white" }}>Faso<span style={{ color: "#EF2B2D" }}>CV</span></span>
-          </div>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13 }}>Connecte-toi pour sauvegarder ton CV</p>
+    <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, #0a0a0a 100%)`, display: "flex", flexDirection: "column" }}>
+      {/* Header */}
+      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button onClick={onBack} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "white", cursor: "pointer", padding: "7px 14px", fontSize: 13, fontWeight: 600 }}>
+          ← Retour
+        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <LogoBF size={28} />
+          <span style={{ color: "white", fontWeight: 900, fontSize: 20 }}>Faso<span style={{ color: "#EF2B2D" }}>CV</span></span>
         </div>
+        <div style={{ width: 80 }} />
+      </div>
 
-        <div style={{ background: "white", borderRadius: 16, padding: 32, boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }}>
-          {mode === "choix" && (
-            <>
-              <h2 style={{ fontSize: 20, fontWeight: 800, color: "#111827", margin: "0 0 6px" }}>Connexion / Inscription</h2>
-              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 24 }}>Entre ton email — on t'envoie un lien de connexion direct, sans mot de passe.</p>
-              
-              <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Ton email</label>
+      {/* Contenu */}
+      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+        <div style={{ width: "100%", maxWidth: 440 }}>
+          {etape === "email" && (
+            <div style={{ background: "white", borderRadius: 16, padding: "36px 32px", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
+              <h1 style={{ fontSize: 24, fontWeight: 900, color: "#0f172a", margin: "0 0 8px" }}>{titre}</h1>
+              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 28, lineHeight: 1.6 }}>{sousTitre}</p>
+
+              <label style={{ fontSize: 12, fontWeight: 700, color: "#374151", display: "block", marginBottom: 6 }}>Adresse email</label>
               <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                onKeyDown={e => e.key === "Enter" && envoyerMagicLink()}
+                type="email" value={email}
+                onChange={e => { setEmail(e.target.value); setErreur(""); }}
+                onKeyDown={e => e.key === "Enter" && envoyerLien()}
                 placeholder="exemple@gmail.com"
-                style={{ width: "100%", padding: "10px 14px", border: "1.5px solid #e5e7eb", borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+                style={{ width: "100%", padding: "11px 14px", border: `1.5px solid ${erreur ? "#EF2B2D" : "#e5e7eb"}`, borderRadius: 8, fontSize: 14, outline: "none", boxSizing: "border-box", marginBottom: 6 }}
               />
-              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 8px" }}>{erreur}</p>}
-              
-              <button
-                onClick={envoyerMagicLink}
-                disabled={loading}
-                style={{ width: "100%", padding: "12px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 16 }}>
-                {loading ? "Envoi en cours..." : "Recevoir le lien de connexion"}
+              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 10px" }}>{erreur}</p>}
+
+              <button onClick={envoyerLien} disabled={loading}
+                style={{ width: "100%", padding: "13px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginTop: 8, marginBottom: 20 }}>
+                {loading ? "Envoi en cours..." : "Recevoir le lien de connexion →"}
               </button>
 
-              <div style={{ textAlign: "center" }}>
-                <button onClick={() => setMode("code")} style={{ background: "none", border: "none", color: "#6b7280", fontSize: 12, cursor: "pointer", textDecoration: "underline" }}>
-                  J'ai déjà un code à 6 chiffres
-                </button>
+              <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 16, textAlign: "center" }}>
+                <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>
+                  {mode === "inscription" ? "Tu as déjà un compte ? " : "Pas encore de compte ? "}
+                  <button onClick={() => {}} style={{ background: "none", border: "none", color: "#EF2B2D", cursor: "pointer", fontSize: 12, fontWeight: 700, padding: 0 }}>
+                    {mode === "inscription" ? "Se connecter" : "S'inscrire"}
+                  </button>
+                </p>
               </div>
-            </>
+            </div>
           )}
 
-          {mode === "envoye" && (
-            <>
-              <div style={{ textAlign: "center", marginBottom: 20 }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>📧</div>
-                <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", margin: "0 0 8px" }}>Vérifie ton email !</h2>
-                <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}>{message}</p>
-              </div>
-              <button onClick={() => setMode("code")} style={{ width: "100%", padding: "10px", background: "#f3f4f6", color: "#374151", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                Entrer le code manuellement
+          {etape === "envoye" && (
+            <div style={{ background: "white", borderRadius: 16, padding: "36px 32px", boxShadow: "0 20px 60px rgba(0,0,0,0.5)", textAlign: "center" }}>
+              <div style={{ fontSize: 56, marginBottom: 16 }}>📧</div>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0f172a", margin: "0 0 10px" }}>Vérifie ton email</h2>
+              <p style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.7, marginBottom: 24 }}>
+                On a envoyé un lien et un code à <strong>{email}</strong>.<br/>
+                Clique sur le lien dans l'email ou entre le code ci-dessous.
+              </p>
+              <button onClick={() => setEtape("code")}
+                style={{ width: "100%", padding: "12px", background: "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: "pointer", marginBottom: 10 }}>
+                Entrer le code à 6 chiffres
               </button>
-              <button onClick={() => { setMode("choix"); setMessage(""); }} style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer", marginTop: 8 }}>
-                Changer d'email
+              <button onClick={() => { setEtape("email"); setEmail(""); }}
+                style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer" }}>
+                Changer d'adresse email
               </button>
-            </>
+            </div>
           )}
 
-          {mode === "code" && (
-            <>
-              <h2 style={{ fontSize: 18, fontWeight: 800, color: "#111827", margin: "0 0 6px" }}>Entre ton code</h2>
-              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 20 }}>Le code à 6 chiffres envoyé à {email || "ton email"}</p>
+          {etape === "code" && (
+            <div style={{ background: "white", borderRadius: 16, padding: "36px 32px", boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }}>
+              <h2 style={{ fontSize: 22, fontWeight: 900, color: "#0f172a", margin: "0 0 8px" }}>Entre ton code</h2>
+              <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 24 }}>Code envoyé à <strong>{email}</strong></p>
               <input
-                type="text"
-                value={code}
-                onChange={e => setCode(e.target.value)}
+                type="text" value={code}
+                onChange={e => { setCode(e.target.value.replace(/\D/g, '')); setErreur(""); }}
                 onKeyDown={e => e.key === "Enter" && verifierCode()}
-                placeholder="123456"
+                placeholder="_ _ _ _ _ _"
                 maxLength={6}
-                style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e5e7eb", borderRadius: 8, fontSize: 20, textAlign: "center", letterSpacing: 8, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+                style={{ width: "100%", padding: "14px", border: `1.5px solid ${erreur ? "#EF2B2D" : "#e5e7eb"}`, borderRadius: 8, fontSize: 28, textAlign: "center", letterSpacing: 10, outline: "none", boxSizing: "border-box", marginBottom: 6, fontWeight: 700 }}
               />
-              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 8px" }}>{erreur}</p>}
-              <button
-                onClick={verifierCode}
-                disabled={loading}
-                style={{ width: "100%", padding: "12px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 12 }}>
-                {loading ? "Vérification..." : "Se connecter"}
+              {erreur && <p style={{ color: "#EF2B2D", fontSize: 12, margin: "0 0 10px" }}>{erreur}</p>}
+              <button onClick={verifierCode} disabled={loading}
+                style={{ width: "100%", padding: "13px", background: loading ? "#9ca3af" : "#EF2B2D", color: "white", border: "none", borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", marginBottom: 10 }}>
+                {loading ? "Vérification..." : "Confirmer →"}
               </button>
-              <button onClick={() => setMode("choix")} style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer" }}>
+              <button onClick={() => setEtape("envoye")}
+                style={{ width: "100%", padding: "10px", background: "none", color: "#9ca3af", border: "none", fontSize: 12, cursor: "pointer" }}>
                 ← Retour
               </button>
-            </>
+            </div>
           )}
         </div>
-
-        <p style={{ textAlign: "center", marginTop: 20, color: "rgba(255,255,255,0.3)", fontSize: 11 }}>
-          © 2025 FasoCV — Tes données sont sécurisées
-        </p>
       </div>
     </div>
   );
@@ -943,6 +933,7 @@ function PageAuth({ onConnecte }) {
 
 export default function FasoCV() {
   const [user, setUser] = useState(null);
+  const [authMode, setAuthMode] = useState("connexion"); // connexion | inscription
   const [sessionLoading, setSessionLoading] = useState(true);
   const [screen, setScreen] = useState("home");
   const [cv, setCv] = useState(EMPTY_CV);
@@ -1076,7 +1067,7 @@ export default function FasoCV() {
     setExporting(false);
   };
 
-  if (screen === "home") return <Accueil onStart={handleStart} onPremium={() => setScreen("premium")} user={user} onAuth={() => setScreen("auth")} onSignOut={async () => { await supabase.auth.signOut(); setUser(null); }} />;
+  if (screen === "home") return <Accueil onStart={handleStart} onPremium={() => setScreen("premium")} user={user} onAuth={(mode) => { setAuthMode(mode); setScreen("auth"); }} onSignOut={async () => { await supabase.auth.signOut(); setUser(null); }} />;
   // Chargement session
   if (sessionLoading) return (
     <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#0a0f05" }}>
@@ -1084,7 +1075,7 @@ export default function FasoCV() {
     </div>
   );
 
-  if (!user && screen === "auth") return <PageAuth onConnecte={(u) => { setUser(u); setScreen("home"); }} />;
+  if (!user && screen === "auth") return <PageAuth mode={authMode} onConnecte={(u) => { setUser(u); setScreen("home"); }} onBack={() => setScreen("home")} />;
 
   if (screen === "premium") return <PagePremium onBack={() => setScreen("home")} />;
 
@@ -1199,7 +1190,7 @@ export default function FasoCV() {
             {nbTelechargements >= 3 ? <Icon path={icons.lock} size={12} /> : <Icon path={icons.download} size={12} />}
             {exporting ? "..." : nbTelechargements >= 3 ? "🔒" : "PDF"}
           </button>
-          {user ? (
+          {user && (
             <div style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, padding: "4px 10px" }}>
               <span style={{ fontSize: 11, color: "#374151", fontWeight: 600 }}>👤 {user.email?.split("@")[0]}</span>
               <span style={{ color: "#d1d5db" }}>|</span>
@@ -1207,10 +1198,6 @@ export default function FasoCV() {
                 Déconnexion
               </button>
             </div>
-          ) : (
-            <button onClick={() => setScreen("auth")} style={{ padding: "5px 12px", background: BF.vert, border: "none", borderRadius: 7, cursor: "pointer", fontSize: 11, fontWeight: 700, color: "white" }}>
-              Se connecter
-            </button>
           )}
         </div>
       </header>
