@@ -1161,8 +1161,8 @@ export default function FasoCV() {
 
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 50, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => { if (showPreview) { setShowPreview(false); } else if (step > 1) { setStep(step - 1); } else { setScreen("home"); } }} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
-            ← {showPreview ? "Formulaire" : step > 1 ? "Précédent" : "Accueil"}
+          <button onClick={() => { if (isDemo || showPreview) { setScreen("home"); setShowPreview(false); } else if (step > 1) { setStep(step - 1); } else { setScreen("home"); } }} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
+            ← {isDemo ? "Retour" : showPreview ? "Retour" : step > 1 ? "Précédent" : "Accueil"}
           </button>
           <button onClick={() => setScreen("home")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
             <LogoBF size={28} />
