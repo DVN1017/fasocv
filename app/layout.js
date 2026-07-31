@@ -1,5 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { CvProvider } from "../lib/CvContext";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -65,7 +66,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <CvProvider>
+          {children}
+        </CvProvider>
         <Analytics />
       </body>
     </html>
