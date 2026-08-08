@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 const EMPTY_CV = {
   personal: { name: "", title: "", phone: "", email: "", location: "", website: "", photo: null },
@@ -39,16 +39,20 @@ function readDraft() {
 const CvContext = createContext(null);
 
 export function CvProvider({ children }) {
-  const initialDraft = readDraft();
-  const [cv, setCv] = useState(() => initialDraft?.cv || cloneEmptyCv());
-  const [template, setTemplate] = useState(() => initialDraft?.template || "moderne");
-  const [step, setStep] = useState(() => initialDraft?.step || 0);
+  const [cv, setCv] = useState(cloneEmptyCv);
+  const [template, setTemplate] = useState("moderne");
+  const [step, setStep] = useState(0);
   const [hydrated, setHydrated] = useState(false);
 
-  const updateCv = (key, value) => setCv(prev => ({ ...prev, [key]: value }));
-  const replaceCv = (nextCv) => setCv(nextCv && typeof nextCv === "object" ? nextCv : cloneEmptyCv());
+  const updateCv = useCallback((key, value) => {
+    setCv(prev => ({ ...prev, [key]: value }));
+  }, []);
 
-  const resetCv = () => {
+  const replaceCv = useCallback((nextCv) => {
+    setCv(nextCv && typeof nextCv === "object" ? nextCv : cloneEmptyCv());
+  }, []);
+
+  const resetCv = useCallback(() => {
     setCv(cloneEmptyCv());
     setTemplate("moderne");
     setStep(0);
@@ -60,12 +64,22 @@ export function CvProvider({ children }) {
         // Ignore storage errors; the in-memory reset still succeeds.
       }
     }
-  };
+  }, []);
 
+  // Read the browser draft after mount. This avoids server/client hydration
+  // mismatches while still restoring the user's work after a refresh.
   useEffect(() => {
+    const draft = readDraft();
+    if (draft) {
+      setCv(draft.cv);
+      setTemplate(draft.template);
+      setStep(draft.step);
+    }
     setHydrated(true);
   }, []);
 
+  // Debounced local persistence protects the user against accidental refresh,
+  // navigation and browser interruptions without writing on every keystroke.
   useEffect(() => {
     if (!hydrated || typeof window === "undefined") return;
 
@@ -85,7 +99,7 @@ export function CvProvider({ children }) {
 
   const value = useMemo(
     () => ({ cv, template, step, updateCv, replaceCv, setTemplate, setStep, resetCv }),
-    [cv, template, step]
+    [cv, template, step, updateCv, replaceCv, resetCv]
   );
 
   return <CvContext.Provider value={value}>{children}</CvContext.Provider>;
