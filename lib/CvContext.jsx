@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const EMPTY_CV = {
   personal: { name: "", title: "", phone: "", email: "", location: "", website: "", photo: null },
@@ -10,21 +10,78 @@ const EMPTY_CV = {
   languages: [{ id: 1, language: "", level: "Courant" }],
 };
 
+const DRAFT_KEY = "fasocv_draft_v1";
+
+function cloneEmptyCv() {
+  return JSON.parse(JSON.stringify(EMPTY_CV));
+}
+
+function readDraft() {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const raw = window.localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw);
+    if (!parsed?.cv || typeof parsed.cv !== "object") return null;
+
+    return {
+      cv: parsed.cv,
+      template: parsed.template || "moderne",
+      step: Number.isInteger(parsed.step) ? parsed.step : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
 const CvContext = createContext(null);
 
 export function CvProvider({ children }) {
-  const [cv, setCv] = useState(EMPTY_CV);
-  const [template, setTemplate] = useState("moderne");
-  const [step, setStep] = useState(0);
+  const initialDraft = readDraft();
+  const [cv, setCv] = useState(() => initialDraft?.cv || cloneEmptyCv());
+  const [template, setTemplate] = useState(() => initialDraft?.template || "moderne");
+  const [step, setStep] = useState(() => initialDraft?.step || 0);
+  const [hydrated, setHydrated] = useState(false);
 
   const updateCv = (key, value) => setCv(prev => ({ ...prev, [key]: value }));
-  const replaceCv = (nextCv) => setCv(nextCv);
+  const replaceCv = (nextCv) => setCv(nextCv && typeof nextCv === "object" ? nextCv : cloneEmptyCv());
 
   const resetCv = () => {
-    setCv(EMPTY_CV);
+    setCv(cloneEmptyCv());
     setTemplate("moderne");
     setStep(0);
+
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        // Ignore storage errors; the in-memory reset still succeeds.
+      }
+    }
   };
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated || typeof window === "undefined") return;
+
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(
+          DRAFT_KEY,
+          JSON.stringify({ cv, template, step, savedAt: Date.now() })
+        );
+      } catch {
+        // Storage can be unavailable/full; never block CV editing because of it.
+      }
+    }, 350);
+
+    return () => window.clearTimeout(timer);
+  }, [cv, template, step, hydrated]);
 
   const value = useMemo(
     () => ({ cv, template, step, updateCv, replaceCv, setTemplate, setStep, resetCv }),
