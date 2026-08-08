@@ -8,6 +8,8 @@ function AuthClient() {
   const params = useSearchParams();
   const router = useRouter();
   const mode = params?.get("mode") === "inscription" ? "inscription" : "connexion";
+  const rawNext = params?.get("next") || "/";
+  const nextPath = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/";
 
   const [email, setEmail] = useState("");
   const [etape, setEtape] = useState("email");
@@ -33,6 +35,14 @@ function AuthClient() {
     [mode]
   );
 
+  const retourner = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
+
   const envoyerLien = async () => {
     if (!email.trim()) { setErreur("Entre ton email"); return; }
     setLoading(true);
@@ -56,7 +66,7 @@ function AuthClient() {
     setLoading(true);
     setErreur("");
 
-    const { data, error } = await supabase.auth.verifyOtp({
+    const { error } = await supabase.auth.verifyOtp({
       email: email.trim(),
       token: code.trim(),
       type: "email",
@@ -65,15 +75,21 @@ function AuthClient() {
     if (error) {
       setErreur("Code incorrect. Réessaye.");
     } else {
-      router.push("/");
+      router.replace(nextPath);
     }
     setLoading(false);
+  };
+
+  const switchMode = () => {
+    const targetMode = mode === "inscription" ? "connexion" : "inscription";
+    const nextQuery = nextPath !== "/" ? `&next=${encodeURIComponent(nextPath)}` : "";
+    router.push(`/connexion?mode=${targetMode}${nextQuery}`);
   };
 
   return (
     <div style={{ minHeight: "100vh", background: `linear-gradient(155deg, #0a0f05 0%, #1a1200 45%, #0a0a0a 100%)`, display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button onClick={() => router.push("/")} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "white", cursor: "pointer", padding: "7px 14px", fontSize: 13, fontWeight: 600 }}>
+        <button onClick={retourner} style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, color: "white", cursor: "pointer", padding: "7px 14px", fontSize: 13, fontWeight: 600 }}>
           ← Retour
         </button>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -106,7 +122,7 @@ function AuthClient() {
               <div style={{ borderTop: "1px solid #f3f4f6", paddingTop: 16, textAlign: "center" }}>
                 <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>
                   {mode === "inscription" ? "Tu as déjà un compte ? " : "Pas encore de compte ? "}
-                  <button onClick={() => router.push(`/connexion?mode=${mode === "inscription" ? "connexion" : "inscription"}`)} style={{ background: "none", border: "none", color: "#EF2B2D", cursor: "pointer", fontSize: 12, fontWeight: 700, padding: 0 }}>
+                  <button onClick={switchMode} style={{ background: "none", border: "none", color: "#EF2B2D", cursor: "pointer", fontSize: 12, fontWeight: 700, padding: 0 }}>
                     {mode === "inscription" ? "Se connecter" : "S'inscrire"}
                   </button>
                 </p>
@@ -139,6 +155,8 @@ function AuthClient() {
               <p style={{ fontSize: 13, color: "#6b7280", marginBottom: 24 }}>Code envoyé à <strong>{email}</strong></p>
               <input
                 type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 value={code}
                 onChange={(e) => { setCode(e.target.value.replace(/\D/g, "")); setErreur(""); }}
                 onKeyDown={(e) => e.key === "Enter" && verifierCode()}
