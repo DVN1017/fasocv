@@ -73,6 +73,14 @@ export default function MesCvPage() {
     };
   }, [user]);
 
+  const retourner = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
+
   if (loadingSession) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#f8fafc" }}>
@@ -85,16 +93,16 @@ export default function MesCvPage() {
     return (
       <div style={{ minHeight: "100vh", background: "#f8fafc", padding: 20 }}>
         <div style={{ maxWidth: 560, margin: "80px auto", background: "white", border: "1px solid #e5e7eb", borderRadius: 14, padding: 22 }}>
+          <button onClick={retourner} style={{ marginBottom: 16, padding: "8px 12px", background: "white", border: "1px solid #e5e7eb", borderRadius: 8, color: "#334155", cursor: "pointer", fontWeight: 700 }}>
+            ← Retour
+          </button>
           <h1 style={{ margin: "0 0 8px", color: "#0f172a", fontSize: 26, fontWeight: 900 }}>Mes CV</h1>
           <p style={{ margin: "0 0 18px", color: "#64748b", lineHeight: 1.6 }}>
             Connecte-toi pour voir et gérer tes CV sauvegardés.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <button onClick={() => router.push("/connexion?mode=connexion")} style={{ padding: "10px 14px", background: BF.rouge, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 700 }}>
+            <button onClick={() => router.push(`/connexion?mode=connexion&next=${encodeURIComponent("/mes-cv")}`)} style={{ padding: "10px 14px", background: BF.rouge, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 700 }}>
               Se connecter
-            </button>
-            <button onClick={() => router.push("/")} style={{ padding: "10px 14px", background: "white", border: "1px solid #e5e7eb", borderRadius: 8, color: "#334155", cursor: "pointer", fontWeight: 700 }}>
-              Retour accueil
             </button>
           </div>
         </div>
@@ -106,7 +114,12 @@ export default function MesCvPage() {
     <div style={{ minHeight: "100vh", background: "#f8fafc", padding: 20 }}>
       <div style={{ maxWidth: 920, margin: "20px auto" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 14 }}>
-          <h1 style={{ margin: 0, color: "#0f172a", fontSize: 31, fontWeight: 900 }}>Mes CV</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <button onClick={retourner} aria-label="Retour" style={{ width: 40, height: 40, background: "white", border: "1px solid #e5e7eb", borderRadius: 10, color: "#334155", cursor: "pointer", fontSize: 18, fontWeight: 700 }}>
+              ←
+            </button>
+            <h1 style={{ margin: 0, color: "#0f172a", fontSize: 31, fontWeight: 900 }}>Mes CV</h1>
+          </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <button onClick={() => router.push("/builder?new=1")} style={{ padding: "10px 14px", background: `linear-gradient(135deg, ${BF.vert}, ${BF.vertFonce})`, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 700 }}>
               + Nouveau CV
