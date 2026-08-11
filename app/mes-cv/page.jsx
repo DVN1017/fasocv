@@ -19,7 +19,6 @@ export default function MesCvPage() {
 
   useEffect(() => {
     let mounted = true;
-
     supabase.auth.getSession()
       .then(({ data: { session } }) => {
         if (!mounted) return;
@@ -121,7 +120,7 @@ export default function MesCvPage() {
             <h1 style={{ margin: 0, color: "#0f172a", fontSize: 31, fontWeight: 900 }}>Mes CV</h1>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <button onClick={() => router.push("/builder?new=1")} style={{ padding: "10px 14px", background: `linear-gradient(135deg, ${BF.vert}, ${BF.vertFonce})`, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 700 }}>
+            <button onClick={() => router.push("/builder?new=1&from=%2Fmes-cv")} style={{ padding: "10px 14px", background: `linear-gradient(135deg, ${BF.vert}, ${BF.vertFonce})`, border: "none", borderRadius: 8, color: "white", cursor: "pointer", fontWeight: 700 }}>
               + Nouveau CV
             </button>
             <button onClick={() => router.push("/")} style={{ padding: "10px 14px", background: "white", border: "1px solid #e5e7eb", borderRadius: 8, color: "#334155", cursor: "pointer", fontWeight: 700 }}>
@@ -146,7 +145,7 @@ export default function MesCvPage() {
                     Modifié le {new Date(item.updated_at).toLocaleString("fr-FR")}
                   </div>
                 </div>
-                <button onClick={() => router.push(`/builder?cvId=${item.id}`)} style={{ padding: "8px 12px", background: "white", border: `1px solid ${BF.vert}`, borderRadius: 8, color: BF.vertFonce, cursor: "pointer", fontWeight: 700 }}>
+                <button onClick={() => router.push(`/builder?cvId=${encodeURIComponent(item.id)}&from=%2Fmes-cv`)} style={{ padding: "8px 12px", background: "white", border: `1px solid ${BF.vert}`, borderRadius: 8, color: BF.vertFonce, cursor: "pointer", fontWeight: 700 }}>
                   Ouvrir
                 </button>
               </div>
