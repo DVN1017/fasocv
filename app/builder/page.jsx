@@ -32,6 +32,8 @@ function BuilderClient() {
   const demo = params?.get("demo") === "1";
   const cvIdParam = params?.get("cvId");
   const forceNewCv = params?.get("new") === "1";
+  const rawFrom = params?.get("from") || "";
+  const returnPath = rawFrom.startsWith("/") && !rawFrom.startsWith("//") ? rawFrom : "/";
   const { cv, setStep, step, template, setTemplate, updateCv, replaceCv, resetCv } = useCv();
   const [showPreview, setShowPreview] = useState(demo);
   const [isMobile, setIsMobile] = useState(false);
@@ -50,6 +52,22 @@ function BuilderClient() {
   const [saveNotice, setSaveNotice] = useState("");
   const [cvLoading, setCvLoading] = useState(false);
   const previewRef = useRef(null);
+
+  const handleBuilderBack = () => {
+    if (returnPath !== "/") {
+      router.push(returnPath);
+      return;
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  };
+
+  const connexionPath = `/connexion?mode=connexion&next=${encodeURIComponent(
+    `/builder${cvIdParam ? `?cvId=${encodeURIComponent(cvIdParam)}` : forceNewCv ? "?new=1" : ""}${returnPath !== "/" ? `&from=${encodeURIComponent(returnPath)}` : ""}`
+  )}`;
 
   useEffect(() => {
     const saved = parseInt(localStorage.getItem("fasocv_dl") || "0");
@@ -188,7 +206,8 @@ function BuilderClient() {
 
     setCurrentCvId(data.id);
     setCurrentTitre(data.titre || titreFinal);
-    router.replace(`/builder?cvId=${data.id}`);
+    const savedUrl = `/builder?cvId=${encodeURIComponent(data.id)}${returnPath !== "/" ? `&from=${encodeURIComponent(returnPath)}` : ""}`;
+    router.replace(savedUrl);
     setSaveNotice("CV sauvegardé.");
     return true;
   };
@@ -217,7 +236,7 @@ function BuilderClient() {
     }
 
     if (!user) {
-      router.push("/connexion?mode=connexion");
+      router.push(connexionPath);
       return;
     }
 
@@ -456,7 +475,7 @@ function BuilderClient() {
       <div style={{ height: 3, background: `linear-gradient(90deg, ${BF.rouge} 33%, ${BF.jaune} 33%, ${BF.jaune} 66%, ${BF.vert} 66%)`, flexShrink: 0 }} />
       <header style={{ background: "white", borderBottom: "1px solid #e5e7eb", padding: "0 14px", height: 50, display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button onClick={() => router.back()} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
+          <button onClick={handleBuilderBack} style={{ display: "flex", alignItems: "center", gap: 5, background: "#f3f4f6", border: "1px solid #e5e7eb", borderRadius: 7, cursor: "pointer", padding: "5px 10px", fontSize: 14.3, fontWeight: 700, color: "#374151" }}>
             ← Retour
           </button>
           <button onClick={() => router.push("/")} style={{ display: "flex", alignItems: "center", gap: 7, background: "none", border: "none", cursor: "pointer" }}>
@@ -497,7 +516,7 @@ function BuilderClient() {
               {saveLoading ? "..." : "Sauvegarder"}
             </button>
           ) : (
-            <a href="/connexion?mode=connexion" style={{ padding: "6px 10px", background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 7, color: "#6b7280", cursor: "pointer", fontSize: 11, fontWeight: 600, textDecoration: "none" }}>
+            <a href={connexionPath} style={{ padding: "6px 10px", background: "#f8fafc", border: "1px solid #e5e7eb", borderRadius: 7, color: "#6b7280", cursor: "pointer", fontSize: 11, fontWeight: 600, textDecoration: "none" }}>
               Se connecter pour sauvegarder
             </a>
           )}
