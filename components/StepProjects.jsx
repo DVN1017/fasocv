@@ -15,6 +15,36 @@ function createProject() {
   };
 }
 
+const TEST_PROJECTS = [
+  {
+    id: "fasocv",
+    name: "FasoCV",
+    description: "Online CV builder allowing users to create, customize and export professional resumes.",
+    technologies: ["Next.js", "React", "TypeScript", "Supabase", "HTML2Canvas"],
+    url: "",
+    githubUrl: "",
+    role: "Full Stack Developer",
+  },
+  {
+    id: "colispro",
+    name: "ColisPro",
+    description: "Parcel tracking platform designed for transport companies, including QR-based tracking and multi-agency management.",
+    technologies: ["Next.js", "React", "TypeScript", "PostgreSQL/Supabase", "QR Code"],
+    url: "",
+    githubUrl: "",
+    role: "Full Stack Developer",
+  },
+  {
+    id: "flexisave",
+    name: "FlexiSave",
+    description: "Web application for setting, tracking and managing personal savings goals.",
+    technologies: ["Next.js", "React", "TypeScript", "Supabase"],
+    url: "",
+    githubUrl: "",
+    role: "Full Stack Developer",
+  },
+];
+
 const iconButton = {
   width: 26,
   height: 26,
@@ -35,12 +65,10 @@ export function StepProjects({ cv, update }) {
   const projects = Array.isArray(cv.projects) ? cv.projects : [];
 
   const add = () => update("projects", [...projects, createProject()]);
+  const loadTestProjects = () => update("projects", TEST_PROJECTS.map(project => ({ ...project })));
   const remove = (id) => update("projects", projects.filter(project => project.id !== id));
   const updateProject = (id, field, value) => {
-    update(
-      "projects",
-      projects.map(project => project.id === id ? { ...project, [field]: value } : project)
-    );
+    update("projects", projects.map(project => project.id === id ? { ...project, [field]: value } : project));
   };
   const move = (index, direction) => {
     const nextIndex = index + direction;
@@ -64,6 +92,15 @@ export function StepProjects({ cv, update }) {
         </div>
       </div>
 
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        <button type="button" onClick={add} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "9px 13px", border: "1.5px solid #2F6F9F", borderRadius: 8, background: "#EEF4F8", color: "#17324d", cursor: "pointer", fontSize: 11, fontWeight: 800 }}>
+          <Icon path="M12 5v14M5 12h14" size={14} /> Ajouter un projet
+        </button>
+        <button type="button" onClick={loadTestProjects} style={{ padding: "9px 13px", border: "1px solid #dbe3ea", borderRadius: 8, background: "white", color: "#475569", cursor: "pointer", fontSize: 11, fontWeight: 700 }}>
+          Charger mes 3 projets de test
+        </button>
+      </div>
+
       {projects.map((project, index) => (
         <div key={project.id} style={{ background: "#f8fafc", border: "1px solid #dbe3ea", borderRadius: 10, padding: 13 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
@@ -72,7 +109,7 @@ export function StepProjects({ cv, update }) {
               <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Monter le projet" style={{ ...iconButton, opacity: index === 0 ? 0.35 : 1 }}>↑</button>
               <button type="button" onClick={() => move(index, 1)} disabled={index === projects.length - 1} aria-label="Descendre le projet" style={{ ...iconButton, opacity: index === projects.length - 1 ? 0.35 : 1 }}>↓</button>
               <button type="button" onClick={() => remove(project.id)} aria-label="Supprimer le projet" style={{ ...iconButton, color: "#b91c1c" }}>
-                <Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={13} />
+                <Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1 1v2" size={13} />
               </button>
             </div>
           </div>
@@ -89,10 +126,6 @@ export function StepProjects({ cv, update }) {
           </div>
         </div>
       ))}
-
-      <button type="button" onClick={add} style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "10px 14px", border: "1.5px dashed #6b8ba6", borderRadius: 8, background: "#f5f8fb", color: "#17324d", cursor: "pointer", fontSize: 12, fontWeight: 800 }}>
-        <Icon path="M12 5v14M5 12h14" size={15} /> Ajouter un projet
-      </button>
     </div>
   );
 }
