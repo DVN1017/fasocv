@@ -3,6 +3,7 @@ import React from "react";
 import { Input, Textarea, Select, PhotoUpload } from "./FormFields";
 import { Icon } from "./Icons";
 import { BF, baseInput } from "./styles";
+import { StepProjects } from "./StepProjects";
 
 const LANG_LEVELS = ["Langue maternelle", "Courant", "Avancé", "Intermédiaire", "Débutant"];
 
@@ -49,7 +50,7 @@ export function StepExperience({ cv, update }) {
         <div key={exp.id} style={{ background: "#f9fafb", borderTop: `3px solid ${BF.rouge}`, borderRight: "1.5px solid #e5e7eb", borderBottom: "1.5px solid #e5e7eb", borderLeft: "1.5px solid #e5e7eb", borderRadius: 10, padding: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
             <span style={{ fontSize: 10, fontWeight: 800, color: BF.rouge, letterSpacing: "1px" }}>EXPÉRIENCE #{idx + 1}</span>
-            {cv.experience.length > 1 && <button onClick={() => remove(exp.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={14} /></button>}
+            {cv.experience.length > 1 && <button onClick={() => remove(exp.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1 1v2" size={14} /></button>}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -78,7 +79,7 @@ export function StepFormation({ cv, update }) {
         <div key={edu.id} style={{ background: "#f9fafb", borderTop: `3px solid ${BF.vert}`, borderRight: "1.5px solid #e5e7eb", borderBottom: "1.5px solid #e5e7eb", borderLeft: "1.5px solid #e5e7eb", borderRadius: 10, padding: 14 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
             <span style={{ fontSize: 10, fontWeight: 800, color: BF.vert, letterSpacing: "1px" }}>FORMATION #{idx + 1}</span>
-            {cv.education.length > 1 && <button onClick={() => remove(edu.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={14} /></button>}
+            {cv.education.length > 1 && <button onClick={() => remove(edu.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1 1v2" size={14} /></button>}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -109,15 +110,8 @@ export function StepCompetences({ cv, update }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {skills.map((skill, i) => (
           <div key={i} style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <input
-              value={skill}
-              onChange={e => updateSkill(i, e.target.value)}
-              placeholder={`Compétence ${i + 1}`}
-              style={{ ...baseInput, flex: 1 }}
-              onFocus={e => e.target.style.borderColor = BF.vert}
-              onBlur={e => e.target.style.borderColor = "#e5e7eb"}
-            />
-            {skills.length > 1 && <button onClick={() => remove(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={14} /></button>}
+            <input value={skill} onChange={e => updateSkill(i, e.target.value)} placeholder={`Compétence ${i + 1}`} style={{ ...baseInput, flex: 1 }} onFocus={e => e.target.style.borderColor = BF.vert} onBlur={e => e.target.style.borderColor = "#e5e7eb"} />
+            {skills.length > 1 && <button onClick={() => remove(i)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444" }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1 1v2" size={14} /></button>}
           </div>
         ))}
         <button onClick={add} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: `1.5px dashed ${BF.vert}`, borderRadius: 8, background: BF.vertLight, color: BF.vertFonce, cursor: "pointer", fontSize: 12, fontWeight: 700, marginTop: 4 }}>
@@ -139,12 +133,13 @@ export function StepLangues({ cv, update }) {
         <div key={lang.id} style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: 8, alignItems: "end" }}>
           <Input label="Langue" value={lang.language} onChange={v => upd(lang.id, "language", v)} placeholder="Français" />
           <Select label="Niveau" value={lang.level} onChange={v => upd(lang.id, "level", v)} options={LANG_LEVELS} />
-          {cv.languages.length > 1 && <button onClick={() => remove(lang.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", paddingBottom: 4 }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={14} /></button>}
+          {cv.languages.length > 1 && <button onClick={() => remove(lang.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#ef4444", paddingBottom: 4 }}><Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1 1v2" size={14} /></button>}
         </div>
       ))}
       <button onClick={add} style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 14px", border: `1.5px dashed ${BF.vert}`, borderRadius: 8, background: BF.vertLight, color: BF.vertFonce, cursor: "pointer", fontSize: 12, fontWeight: 700 }}>
         <Icon path="M12 5v14M5 12h14" size={15} /> Ajouter une langue
       </button>
+      <StepProjects cv={cv} update={update} />
     </div>
   );
 }
