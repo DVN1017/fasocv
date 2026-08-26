@@ -2,7 +2,6 @@
 import React from "react";
 import { Input, Textarea } from "./FormFields";
 import { Icon } from "./Icons";
-import { BF, baseInput } from "./styles";
 
 function createProject() {
   return {
@@ -15,6 +14,22 @@ function createProject() {
     role: "",
   };
 }
+
+const iconButton = {
+  width: 26,
+  height: 26,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 0,
+  border: "1px solid #dbe3ea",
+  borderRadius: 6,
+  background: "white",
+  color: "#17324d",
+  cursor: "pointer",
+  fontSize: 13,
+  fontWeight: 800,
+};
 
 export function StepProjects({ cv, update }) {
   const projects = Array.isArray(cv.projects) ? cv.projects : [];
@@ -54,12 +69,8 @@ export function StepProjects({ cv, update }) {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10 }}>
             <span style={{ fontSize: 10, fontWeight: 900, color: "#17324d", letterSpacing: "1px" }}>PROJECT #{index + 1}</span>
             <div style={{ display: "flex", gap: 3 }}>
-              <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Monter le projet" style={{ ...iconButton, opacity: index === 0 ? 0.35 : 1 }}>
-                ↑
-              </button>
-              <button type="button" onClick={() => move(index, 1)} disabled={index === projects.length - 1} aria-label="Descendre le projet" style={{ ...iconButton, opacity: index === projects.length - 1 ? 0.35 : 1 }}>
-                ↓
-              </button>
+              <button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label="Monter le projet" style={{ ...iconButton, opacity: index === 0 ? 0.35 : 1 }}>↑</button>
+              <button type="button" onClick={() => move(index, 1)} disabled={index === projects.length - 1} aria-label="Descendre le projet" style={{ ...iconButton, opacity: index === projects.length - 1 ? 0.35 : 1 }}>↓</button>
               <button type="button" onClick={() => remove(project.id)} aria-label="Supprimer le projet" style={{ ...iconButton, color: "#b91c1c" }}>
                 <Icon path="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" size={13} />
               </button>
@@ -69,12 +80,7 @@ export function StepProjects({ cv, update }) {
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <Input label="Project name *" value={project.name} onChange={value => updateProject(project.id, "name", value)} placeholder="FasoCV" />
             <Textarea label="Short description *" value={project.description} onChange={value => updateProject(project.id, "description", value)} placeholder="Describez brièvement le projet, son objectif et son impact..." rows={3} />
-            <Input
-              label="Technologies / Tech stack"
-              value={project.technologies.join(", ")}
-              onChange={value => updateProject(project.id, "technologies", value.split(",").map(item => item.trim()).filter(Boolean))}
-              placeholder="Next.js, React, TypeScript, Supabase"
-            />
+            <Input label="Technologies / Tech stack" value={project.technologies.join(", ")} onChange={value => updateProject(project.id, "technologies", value.split(",").map(item => item.trim()).filter(Boolean))} placeholder="Next.js, React, TypeScript, Supabase" />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
               <Input label="Project URL (optionnel)" value={project.url || ""} onChange={value => updateProject(project.id, "url", value)} placeholder="https://monprojet.com" type="url" />
               <Input label="GitHub URL (optionnel)" value={project.githubUrl || ""} onChange={value => updateProject(project.id, "githubUrl", value)} placeholder="https://github.com/..." type="url" />
@@ -90,19 +96,3 @@ export function StepProjects({ cv, update }) {
     </div>
   );
 }
-
-const iconButton = {
-  width: 26,
-  height: 26,
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: 0,
-  border: "1px solid #dbe3ea",
-  borderRadius: 6,
-  background: "white",
-  color: BF?.vertFonce || "#17324d",
-  cursor: "pointer",
-  fontSize: 13,
-  fontWeight: 800,
-};
