@@ -8,12 +8,22 @@ const EMPTY_CV = {
   education: [{ id: 1, institution: "", degree: "", year: "", description: "" }],
   skills: [""],
   languages: [{ id: 1, language: "", level: "Courant" }],
+  projects: [],
 };
 
 const DRAFT_KEY = "fasocv_draft_v1";
 
 function cloneEmptyCv() {
   return JSON.parse(JSON.stringify(EMPTY_CV));
+}
+
+function normalizeCv(cv) {
+  if (!cv || typeof cv !== "object") return cloneEmptyCv();
+  return {
+    ...cloneEmptyCv(),
+    ...cv,
+    projects: Array.isArray(cv.projects) ? cv.projects : [],
+  };
 }
 
 function readDraft() {
@@ -27,7 +37,7 @@ function readDraft() {
     if (!parsed?.cv || typeof parsed.cv !== "object") return null;
 
     return {
-      cv: parsed.cv,
+      cv: normalizeCv(parsed.cv),
       template: parsed.template || "moderne",
       step: Number.isInteger(parsed.step) ? parsed.step : 0,
     };
@@ -49,7 +59,7 @@ export function CvProvider({ children }) {
   }, []);
 
   const replaceCv = useCallback((nextCv) => {
-    setCv(nextCv && typeof nextCv === "object" ? nextCv : cloneEmptyCv());
+    setCv(normalizeCv(nextCv));
   }, []);
 
   const resetCv = useCallback(() => {
@@ -66,8 +76,6 @@ export function CvProvider({ children }) {
     }
   }, []);
 
-  // Read the browser draft after mount. This avoids server/client hydration
-  // mismatches while still restoring the user's work after a refresh.
   useEffect(() => {
     const draft = readDraft();
     if (draft) {
@@ -78,8 +86,6 @@ export function CvProvider({ children }) {
     setHydrated(true);
   }, []);
 
-  // Debounced local persistence protects the user against accidental refresh,
-  // navigation and browser interruptions without writing on every keystroke.
   useEffect(() => {
     if (!hydrated || typeof window === "undefined") return;
 
