@@ -36,8 +36,6 @@ function AuthClient() {
   );
 
   const retourner = () => {
-    // Within the authentication flow, Back should move to the previous
-    // authentication step before leaving the page entirely.
     if (etape === "code") {
       setEtape("envoye");
       setCode("");
@@ -63,9 +61,20 @@ function AuthClient() {
     setLoading(true);
     setErreur("");
 
+    // Always redirect back to the same origin that initiated authentication.
+    // This prevents production signups from being sent to localhost while
+    // keeping localhost development flows working normally.
+    const redirectPath = `/connexion?mode=${mode}${nextPath !== "/" ? `&next=${encodeURIComponent(nextPath)}` : ""}`;
+    const emailRedirectTo = typeof window !== "undefined"
+      ? `${window.location.origin}${redirectPath}`
+      : undefined;
+
     const { error } = await supabase.auth.signInWithOtp({
       email: email.trim(),
-      options: { shouldCreateUser: mode === "inscription" },
+      options: {
+        shouldCreateUser: mode === "inscription",
+        ...(emailRedirectTo ? { emailRedirectTo } : {}),
+      },
     });
 
     if (error) {
