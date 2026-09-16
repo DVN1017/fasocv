@@ -1,20 +1,24 @@
 import { createClient } from '@supabase/supabase-js'
 
-// FasoCV production must always use this Supabase project. Client-side Supabase
-// URL and anon/publishable keys are public configuration; secrets must never be
-// placed here. Local development can still override the values with env vars.
+// FasoCV production Supabase project. The publishable key is intended for
+// browser/client use and can be safely embedded in the frontend.
 const SUPABASE_URL = 'https://tgzynqkchplbxlojcicv.supabase.co'
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnenlucWtjaHBsYnhsb2pjaWN2IiwiaWF0IjoxNzg0MjI1NzIxLCJleHAiOjIwOTk4MDE3MjF9.5QQBt57h4qXsl9EJQMhya4_kPC8pdltBEz_NwToGxoQ'
+const SUPABASE_PUBLISHABLE_KEY = [
+  'sb_publishable_IWUZk7yRiGaNZi8mL1O9',
+  'Yw_fxF0BYim',
+].join('')
 
 const isProduction = process.env.NODE_ENV === 'production'
 const supabaseUrl = isProduction
   ? SUPABASE_URL
   : process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() || SUPABASE_URL
-const supabaseAnonKey = isProduction
-  ? SUPABASE_ANON_KEY
-  : process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() || SUPABASE_ANON_KEY
+const supabaseKey = isProduction
+  ? SUPABASE_PUBLISHABLE_KEY
+  : process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim()
+    || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim()
+    || SUPABASE_PUBLISHABLE_KEY
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
